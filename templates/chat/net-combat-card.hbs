@@ -1,0 +1,50 @@
+<div class="nra-chat-card nra-combat-card">
+  <div class="nra-card-header">
+    <i class="fas fa-crosshairs"></i>
+    <div class="nra-card-title">
+      <span class="nra-card-action">{{localize (concat moduleId '.chat.combatResult')}}</span>
+    </div>
+  </div>
+  <div class="nra-card-body">
+    <p class="nra-combat-desc">{{actionLabel}}</p>
+
+    {{#if attackerName}}
+      <div class="nra-combat-participants">
+        <span class="nra-attacker">{{attackerName}}</span>
+        <span class="nra-vs">{{localize (concat moduleId '.chat.vs')}}</span>
+        <span class="nra-defender">{{defenderName}}</span>
+      </div>
+    {{/if}}
+
+    <div class="nra-roll-details">
+      <div class="nra-roll-row">
+        <span class="nra-roll-label">{{localize (concat moduleId '.chat.roll')}}</span>
+        <span class="nra-roll-value">{{rollTotal}}</span>
+      </div>
+      {{#if vsValue}}
+        <div class="nra-roll-row">
+          <span class="nra-roll-label">{{localize (concat moduleId '.chat.vs')}}</span>
+          <span class="nra-roll-value">{{vsValue}}</span>
+        </div>
+      {{/if}}
+      {{#if damageTotal}}
+        <div class="nra-roll-row nra-roll-damage">
+          <span class="nra-roll-label">{{localize (concat moduleId '.combat.damage')}}</span>
+          <span class="nra-roll-value">{{damageTotal}}</span>
+        </div>
+      {{/if}}
+    </div>
+
+    {{#if resultMessage}}
+      <div class="nra-roll-result {{#if isSuccess}}nra-success{{else}}nra-failure{{/if}}">
+        {{resultMessage}}
+      </div>
+    {{/if}}
+
+    {{#if rezRemaining}}
+      <div class="nra-rez-status">
+        {{localize (concat moduleId '.combat.rezRemaining')}}: {{rezRemaining}}
+      </div>
+    {{/if}}
+  </div>
+</div>

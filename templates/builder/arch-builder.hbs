@@ -1,0 +1,46 @@
+<form class="nra-builder-form" autocomplete="off">
+  <header class="nra-builder-header">
+    <h2><i class="fas fa-network-wired"></i> {{item.name}}</h2>
+    <span class="nra-floor-count">{{floors.length}} Floors</span>
+  </header>
+
+  <div class="nra-toolbar">
+    <button type="button" class="nra-add-floor">
+      <i class="fas fa-plus"></i> {{localize (concat moduleId '.builder.addFloor')}}
+    </button>
+    <button type="button" class="nra-generate-random">
+      <i class="fas fa-dice"></i> {{localize (concat moduleId '.builder.generateRandom')}}
+    </button>
+    <button type="button" class="nra-export-chat">
+      <i class="fas fa-comment-alt"></i> {{localize (concat moduleId '.builder.exportToChat')}}
+    </button>
+    <button type="button" class="nra-clear-all">
+      <i class="fas fa-times-circle"></i> {{localize (concat moduleId '.builder.clearAll')}}
+    </button>
+    <button type="button" class="nra-save">
+      <i class="fas fa-save"></i> {{localize (concat moduleId '.builder.save')}}
+    </button>
+  </div>
+
+  <div class="nra-builder-body">
+    {{#if floors.length}}
+      <div class="nra-floor-list-header">
+        <span class="nra-col-num">#</span>
+        <span class="nra-col-dv">DV</span>
+        <span class="nra-col-content">{{localize (concat moduleId '.builder.content')}}</span>
+        <span class="nra-col-desc">{{localize (concat moduleId '.builder.description')}}</span>
+        <span class="nra-col-actions"></span>
+      </div>
+      <ol class="nra-floor-list">
+        {{#each floors}}
+          {{> "modules/cpr-netrunning-architect/templates/builder/floor-row.hbs" this}}
+        {{/each}}
+      </ol>
+    {{else}}
+      <div class="nra-empty-state">
+        <i class="fas fa-network-wired"></i>
+        <p>No floors yet. Add floors manually or generate a random architecture.</p>
+      </div>
+    {{/if}}
+  </div>
+</form>

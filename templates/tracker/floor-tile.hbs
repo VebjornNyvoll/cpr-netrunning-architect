@@ -1,0 +1,43 @@
+<div class="nra-floor-tile {{#if isCurrentFloor}}nra-current-floor{{/if}} {{#if fogOfWar}}nra-fog{{/if}} {{#if isCleared}}nra-cleared{{/if}} {{#if hasActiveIce}}nra-ice-active{{/if}}"
+     data-floor-index="{{index}}" style="border-left-color: {{color}};">
+
+  <div class="nra-tile-number">
+    <span>{{floorLabel}}</span>
+    {{#if branch}}<span class="nra-branch-badge" title="Branch">B</span>{{/if}}
+  </div>
+
+  {{#if fogOfWar}}
+    <div class="nra-tile-fog">
+      <i class="fas fa-question-circle"></i>
+      <span>{{localize (concat @root.moduleId '.tracker.fogOfWar')}}</span>
+    </div>
+  {{else}}
+    <div class="nra-tile-dv">
+      {{#if showDV}}
+        <span class="nra-dv-badge">DV {{dv}}</span>
+      {{/if}}
+    </div>
+
+    <div class="nra-tile-content">
+      <i class="fas {{contentIcon}}"></i>
+      <span>{{contentLabel}}</span>
+      {{#if iceLabel}}
+        <span class="nra-ice-tag"><i class="fas fa-skull-crossbones"></i> {{iceLabel}}</span>
+      {{/if}}
+    </div>
+
+    {{#if isCleared}}
+      <div class="nra-tile-status">
+        <i class="fas fa-check"></i> {{localize (concat @root.moduleId '.tracker.cleared')}}
+      </div>
+    {{/if}}
+  {{/if}}
+
+  {{#if isCurrentFloor}}
+    <div class="nra-runner-marker">
+      {{#each runners}}
+        {{> "modules/cpr-netrunning-architect/templates/tracker/netrunner-indicator.hbs" this}}
+      {{/each}}
+    </div>
+  {{/if}}
+</div>

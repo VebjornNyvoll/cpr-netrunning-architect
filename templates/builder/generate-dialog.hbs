@@ -1,0 +1,21 @@
+<form class="nra-generate-form">
+  <p>{{localize (concat moduleId '.builder.generateFloorCount')}}</p>
+
+  <div class="form-group">
+    <label>{{localize (concat moduleId '.builder.generateDifficulty')}}</label>
+    <select name="difficulty">
+      <option value="basic" {{#if (eq defaultDifficulty 'basic')}}selected{{/if}}>
+        {{localize (concat moduleId '.settings.difficultyBasic')}}
+      </option>
+      <option value="standard" {{#if (eq defaultDifficulty 'standard')}}selected{{/if}}>
+        {{localize (concat moduleId '.settings.difficultyStandard')}}
+      </option>
+      <option value="uncommon" {{#if (eq defaultDifficulty 'uncommon')}}selected{{/if}}>
+        {{localize (concat moduleId '.settings.difficultyUncommon')}}
+      </option>
+      <option value="advanced" {{#if (eq defaultDifficulty 'advanced')}}selected{{/if}}>
+        {{localize (concat moduleId '.settings.difficultyAdvanced')}}
+      </option>
+    </select>
+  </div>
+</form>

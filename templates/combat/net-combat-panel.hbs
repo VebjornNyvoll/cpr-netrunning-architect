@@ -1,0 +1,80 @@
+<div class="nra-combat">
+  <header class="nra-combat-header">
+    <h2><i class="fas fa-crosshairs"></i> {{localize (concat moduleId '.combat.title')}}</h2>
+    <span class="nra-combat-floor">{{localize (concat moduleId '.builder.floorNumber')}} {{floorLabel}}</span>
+  </header>
+
+  <!-- Black ICE Stats -->
+  <div class="nra-combat-ice">
+    {{> "modules/cpr-netrunning-architect/templates/combat/ice-stat-block.hbs" ice}}
+  </div>
+
+  <!-- Runner Quick Info -->
+  <div class="nra-combat-runner">
+    <div class="nra-runner-header">
+      <img src="{{runner.img}}" width="28" height="28" />
+      <span>{{runner.name}}</span>
+    </div>
+    {{#if rezzedPrograms.length}}
+      <div class="nra-runner-programs">
+        {{#each rezzedPrograms}}
+          <span class="nra-mini-prog" title="{{name}} (ATK: {{system.atk}} DEF: {{system.def}})">
+            {{name}}
+            <span class="nra-mini-rez">{{system.rez.value}}/{{system.rez.max}}</span>
+          </span>
+        {{/each}}
+      </div>
+    {{/if}}
+  </div>
+
+  <!-- Combat Actions -->
+  <div class="nra-combat-actions">
+    <h3>{{localize (concat moduleId '.tracker.tabActions')}}</h3>
+
+    <div class="nra-action-row">
+      <button type="button" class="nra-zap">
+        <i class="fas fa-bolt"></i> {{localize (concat moduleId '.combat.zap')}}
+      </button>
+    </div>
+
+    {{#each rezzedPrograms}}
+      {{#if system.atk}}
+        <div class="nra-action-row">
+          <button type="button" class="nra-program-attack" data-program-id="{{id}}">
+            <i class="fas fa-crosshairs"></i> {{localize (concat @root.moduleId '.combat.attack')}}: {{name}}
+          </button>
+        </div>
+      {{/if}}
+      {{#if system.def}}
+        <div class="nra-action-row">
+          <button type="button" class="nra-program-defend" data-program-id="{{id}}">
+            <i class="fas fa-shield-alt"></i> {{localize (concat @root.moduleId '.combat.defend')}}: {{name}}
+          </button>
+        </div>
+      {{/if}}
+    {{/each}}
+
+    <div class="nra-action-row nra-action-secondary">
+      <button type="button" class="nra-flee">
+        <i class="fas fa-running"></i> {{localize (concat moduleId '.combat.flee')}}
+      </button>
+      <button type="button" class="nra-ice-attack">
+        <i class="fas fa-skull"></i> {{localize (concat moduleId '.combat.iceAttacks')}}
+      </button>
+    </div>
+
+    <div class="nra-action-row nra-action-gm">
+      {{#if isGM}}
+        <button type="button" class="nra-reduce-ice-rez">
+          <i class="fas fa-minus-circle"></i> {{localize (concat moduleId '.programs.reduceRez')}}
+        </button>
+        <button type="button" class="nra-reset-ice-rez">
+          <i class="fas fa-redo"></i> {{localize (concat moduleId '.programs.resetRez')}}
+        </button>
+      {{/if}}
+      <button type="button" class="nra-end-combat">
+        <i class="fas fa-flag-checkered"></i> {{localize (concat moduleId '.combat.endCombat')}}
+      </button>
+    </div>
+  </div>
+</div>

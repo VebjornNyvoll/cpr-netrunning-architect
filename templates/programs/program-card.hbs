@@ -1,0 +1,48 @@
+<div class="nra-program-card {{#if isRezzed}}nra-rezzed{{/if}} {{#if isEmpty}}nra-empty-slot{{/if}}"
+     data-program-id="{{id}}">
+  {{#if isEmpty}}
+    <div class="nra-slot-empty">
+      <i class="fas fa-plus-circle"></i>
+      <span>{{localize (concat @root.moduleId '.programs.empty')}}</span>
+    </div>
+  {{else}}
+    <div class="nra-prog-header">
+      <img src="{{img}}" width="24" height="24" />
+      <span class="nra-prog-name" title="{{name}}">{{name}}</span>
+      <span class="nra-prog-class">{{classLabel}}</span>
+    </div>
+
+    <div class="nra-prog-stats">
+      {{#if system.atk}}
+        <span class="nra-stat" title="{{localize (concat @root.moduleId '.programs.atk')}}">
+          <i class="fas fa-crosshairs"></i> {{system.atk}}
+        </span>
+      {{/if}}
+      {{#if system.def}}
+        <span class="nra-stat" title="{{localize (concat @root.moduleId '.programs.def')}}">
+          <i class="fas fa-shield-alt"></i> {{system.def}}
+        </span>
+      {{/if}}
+    </div>
+
+    <div class="nra-rez-bar" title="REZ: {{system.rez.value}} / {{system.rez.max}}">
+      <div class="nra-rez-fill" style="width: {{rezPercent}}%"></div>
+      <span class="nra-rez-text">{{system.rez.value}} / {{system.rez.max}}</span>
+    </div>
+
+    <div class="nra-prog-actions">
+      {{#if isRezzed}}
+        <button type="button" class="nra-derez-program" data-program-id="{{id}}" title="{{localize (concat @root.moduleId '.programs.derez')}}">
+          <i class="fas fa-power-off"></i>
+        </button>
+      {{else}}
+        <button type="button" class="nra-rez-program" data-program-id="{{id}}" title="{{localize (concat @root.moduleId '.programs.rez')}}">
+          <i class="fas fa-play"></i>
+        </button>
+      {{/if}}
+      <button type="button" class="nra-view-program" data-program-id="{{id}}" title="{{localize (concat @root.moduleId '.programs.viewProgram')}}">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  {{/if}}
+</div>

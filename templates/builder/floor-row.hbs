@@ -1,0 +1,39 @@
+<li class="nra-floor-row nra-floor-drop-zone {{#if branch}}nra-floor-branch{{/if}}"
+    data-floor-index="{{index}}" style="border-left-color: {{color}};">
+  <div class="nra-floor-number">
+    <span class="nra-floor-idx">{{floorLabel}}</span>
+    {{#if branch}}<span class="nra-branch-badge" title="Branch">B</span>{{/if}}
+  </div>
+
+  <div class="nra-floor-dv">
+    <span class="nra-dv-label">DV</span>
+    <span class="nra-dv-value">{{dv}}</span>
+  </div>
+
+  <div class="nra-floor-content">
+    <i class="fas {{contentIcon}}"></i>
+    <span class="nra-content-label">{{contentLabel}}</span>
+    {{#if iceLabel}}
+      <span class="nra-ice-name">{{iceLabel}}</span>
+    {{/if}}
+  </div>
+
+  <div class="nra-floor-desc" title="{{description}}">
+    {{#if description}}{{description}}{{else}}&mdash;{{/if}}
+  </div>
+
+  <div class="nra-floor-actions">
+    <button type="button" class="nra-edit-floor" data-floor-index="{{index}}" title="{{localize (concat @root.moduleId '.builder.editFloor')}}">
+      <i class="fas fa-edit"></i>
+    </button>
+    <button type="button" class="nra-move-floor-up" data-floor-index="{{index}}" title="{{localize (concat @root.moduleId '.builder.moveUp')}}" {{#if isFirst}}disabled{{/if}}>
+      <i class="fas fa-arrow-up"></i>
+    </button>
+    <button type="button" class="nra-move-floor-down" data-floor-index="{{index}}" title="{{localize (concat @root.moduleId '.builder.moveDown')}}" {{#if isLast}}disabled{{/if}}>
+      <i class="fas fa-arrow-down"></i>
+    </button>
+    <button type="button" class="nra-delete-floor" data-floor-index="{{index}}" title="{{localize (concat @root.moduleId '.builder.deleteFloor')}}">
+      <i class="fas fa-trash"></i>
+    </button>
+  </div>
+</li>

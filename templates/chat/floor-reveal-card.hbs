@@ -1,0 +1,27 @@
+<div class="nra-chat-card nra-reveal-card">
+  <div class="nra-card-header">
+    <i class="fas fa-eye"></i>
+    <div class="nra-card-title">
+      <span class="nra-card-action">{{localize (concat moduleId '.chat.floorRevealed')}}</span>
+    </div>
+  </div>
+  <div class="nra-card-body">
+    <p><strong>{{actorName}}</strong> {{localize (concat moduleId '.tracker.floorRevealed')}}</p>
+    <div class="nra-reveal-details">
+      <div class="nra-reveal-row">
+        <span class="nra-reveal-label">{{localize (concat moduleId '.builder.floorNumber')}}</span>
+        <span class="nra-reveal-value">{{floor.num}}</span>
+      </div>
+      <div class="nra-reveal-row">
+        <span class="nra-reveal-label">{{localize (concat moduleId '.builder.content')}}</span>
+        <span class="nra-reveal-value">{{floor.contentLabel}}</span>
+      </div>
+      {{#if floor.iceLabel}}
+        <div class="nra-reveal-row nra-reveal-ice">
+          <span class="nra-reveal-label">{{localize (concat moduleId '.builder.blackIce')}}</span>
+          <span class="nra-reveal-value">{{floor.iceLabel}}</span>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</div>

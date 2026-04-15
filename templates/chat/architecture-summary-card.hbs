@@ -1,0 +1,31 @@
+<div class="nra-chat-card nra-summary-card">
+  <div class="nra-card-header">
+    <i class="fas fa-network-wired"></i>
+    <div class="nra-card-title">
+      <span class="nra-card-name">{{name}}</span>
+      <span class="nra-card-action">{{localize (concat moduleId '.chat.architectureSummary')}}</span>
+    </div>
+  </div>
+  <div class="nra-card-body">
+    <table class="nra-arch-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>DV</th>
+          <th>{{localize (concat moduleId '.builder.content')}}</th>
+          <th>{{localize (concat moduleId '.builder.description')}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each floors}}
+          <tr class="{{#if branch}}nra-row-branch{{/if}}">
+            <td>{{num}}{{#if branch}} <span class="nra-branch-tag">B</span>{{/if}}</td>
+            <td>{{dv}}</td>
+            <td>{{content}}{{#if ice}} ({{ice}}){{/if}}</td>
+            <td>{{#if description}}{{description}}{{else}}&mdash;{{/if}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

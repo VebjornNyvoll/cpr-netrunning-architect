@@ -1,0 +1,42 @@
+<div class="nra-chat-card nra-interface-card">
+  <div class="nra-card-header">
+    <img src="{{actorImg}}" width="28" height="28" />
+    <div class="nra-card-title">
+      <span class="nra-card-name">{{actorName}}</span>
+      <span class="nra-card-action">{{localize (concat moduleId '.chat.interfaceCheck')}}: {{actionKey}}</span>
+    </div>
+  </div>
+
+  <div class="nra-card-body">
+    <div class="nra-roll-details">
+      <div class="nra-roll-row">
+        <span class="nra-roll-label">{{localize (concat moduleId '.chat.roll')}}</span>
+        <span class="nra-roll-value">{{roll.total}}{{#if critRoll}} + {{critRoll.total}}{{/if}}</span>
+      </div>
+      <div class="nra-roll-row">
+        <span class="nra-roll-label">{{localize (concat moduleId '.chat.interfaceRank')}}</span>
+        <span class="nra-roll-value">+{{interfaceRank}}</span>
+      </div>
+      <div class="nra-roll-row nra-roll-total">
+        <span class="nra-roll-label">{{localize (concat moduleId '.chat.total')}}</span>
+        <span class="nra-roll-value">{{total}}</span>
+      </div>
+      <div class="nra-roll-row">
+        <span class="nra-roll-label">{{localize (concat moduleId '.chat.vs')}} {{localize (concat moduleId '.chat.floorDV')}}</span>
+        <span class="nra-roll-value">{{dv}}</span>
+      </div>
+    </div>
+
+    <div class="nra-roll-result {{#if success}}nra-success{{else}}nra-failure{{/if}}">
+      {{#if isCritSuccess}}
+        <i class="fas fa-star"></i> {{localize (concat moduleId '.chat.critSuccess')}}
+      {{else if isCritFail}}
+        <i class="fas fa-skull"></i> {{localize (concat moduleId '.chat.critFail')}}
+      {{else if success}}
+        <i class="fas fa-check-circle"></i> {{localize (concat moduleId '.chat.success')}}
+      {{else}}
+        <i class="fas fa-times-circle"></i> {{localize (concat moduleId '.chat.failure')}}
+      {{/if}}
+    </div>
+  </div>
+</div>

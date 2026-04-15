@@ -33,6 +33,18 @@
           "verified": "0.89.2"
         }
       }
+    ],
+    "recommends": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "reason": "Safe method patching for future extensions"
+      },
+      {
+        "id": "dice-so-nice",
+        "type": "module",
+        "reason": "3D dice animations for Interface checks and combat"
+      }
     ]
   },
   "url": "https://github.com/VebjornNyvoll/cpr-netrunning-architect",

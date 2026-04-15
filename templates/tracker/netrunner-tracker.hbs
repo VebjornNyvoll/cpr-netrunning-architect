@@ -1,0 +1,100 @@
+<div class="nra-tracker">
+  <header class="nra-tracker-header">
+    <div class="nra-tracker-title">
+      <i class="fas fa-network-wired"></i>
+      <h2>{{architecture.name}}</h2>
+    </div>
+    <div class="nra-runner-info">
+      <img src="{{runner.actorImg}}" width="28" height="28" />
+      <span class="nra-runner-name">{{runner.actorName}}</span>
+      <span class="nra-runner-floor">{{localize (concat moduleId '.tracker.currentFloor')}}: {{currentFloorLabel}}</span>
+    </div>
+  </header>
+
+  <nav class="nra-tracker-tabs tabs" data-group="tracker">
+    <a class="item active" data-tab="architecture">
+      <i class="fas fa-building"></i> {{localize (concat moduleId '.tracker.tabArchitecture')}}
+    </a>
+    <a class="item" data-tab="actions">
+      <i class="fas fa-bolt"></i> {{localize (concat moduleId '.tracker.tabActions')}}
+    </a>
+    <a class="item" data-tab="programs">
+      <i class="fas fa-microchip"></i> {{localize (concat moduleId '.tracker.tabPrograms')}}
+    </a>
+  </nav>
+
+  <section class="nra-tracker-content">
+    <!-- Architecture Tower Tab -->
+    <div class="tab active" data-group="tracker" data-tab="architecture">
+      <div class="nra-tower">
+        {{#each floors}}
+          {{> "modules/cpr-netrunning-architect/templates/tracker/floor-tile.hbs" this}}
+        {{/each}}
+      </div>
+
+      <div class="nra-movement-controls">
+        <button type="button" class="nra-move-up" {{#if atLobby}}disabled{{/if}}>
+          <i class="fas fa-arrow-up"></i> {{localize (concat moduleId '.tracker.moveUp')}}
+        </button>
+        <button type="button" class="nra-move-down" {{#if atBottom}}disabled{{/if}}>
+          <i class="fas fa-arrow-down"></i> {{localize (concat moduleId '.tracker.moveDeeper')}}
+        </button>
+        <button type="button" class="nra-jack-out">
+          <i class="fas fa-sign-out-alt"></i> {{localize (concat moduleId '.tracker.jackOut')}}
+        </button>
+      </div>
+
+      {{#if otherRunners.length}}
+        <div class="nra-other-runners">
+          <h4>{{localize (concat moduleId '.tracker.runners')}}</h4>
+          {{#each otherRunners}}
+            <div class="nra-other-runner">
+              <img src="{{actorImg}}" width="20" height="20" />
+              <span>{{actorName}} — Floor {{currentFloor}}</span>
+            </div>
+          {{/each}}
+        </div>
+      {{/if}}
+    </div>
+
+    <!-- NET Actions Tab -->
+    <div class="tab" data-group="tracker" data-tab="actions">
+      <div class="nra-actions-grid">
+        {{#each netActions}}
+          <button type="button" class="nra-net-action" data-action="{{key}}">
+            <i class="fas {{icon}}"></i>
+            <span class="nra-action-name">{{key}}</span>
+            <span class="nra-action-desc">{{localize description}}</span>
+          </button>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Programs Quick View Tab -->
+    <div class="tab" data-group="tracker" data-tab="programs">
+      {{#if cyberdeck}}
+        <div class="nra-programs-quick">
+          <h4>{{cyberdeck.name}} ({{usedSlots}}/{{totalSlots}} {{localize (concat moduleId '.programs.slots')}})</h4>
+          <div class="nra-program-list">
+            {{#each rezzedPrograms}}
+              <div class="nra-program-quick-card {{#if isRezzed}}nra-rezzed{{/if}}">
+                <span class="nra-prog-name">{{name}}</span>
+                <span class="nra-prog-stat">ATK {{system.atk}}</span>
+                <span class="nra-prog-stat">DEF {{system.def}}</span>
+                <div class="nra-rez-bar-mini">
+                  <div class="nra-rez-fill" style="width: {{rezPercent}}%"></div>
+                  <span>{{system.rez.value}}/{{system.rez.max}}</span>
+                </div>
+              </div>
+            {{/each}}
+          </div>
+          <button type="button" class="nra-open-programs">
+            <i class="fas fa-microchip"></i> {{localize (concat moduleId '.programs.title')}}
+          </button>
+        </div>
+      {{else}}
+        <p class="nra-no-deck">{{localize (concat moduleId '.programs.noCyberdeck')}}</p>
+      {{/if}}
+    </div>
+  </section>
+</div>

@@ -1,0 +1,34 @@
+<div class="nra-ice-stats">
+  <div class="nra-ice-header">
+    <i class="fas fa-skull-crossbones"></i>
+    <span class="nra-ice-name">{{name}}</span>
+    <span class="nra-ice-class">({{classLabel}})</span>
+  </div>
+
+  <div class="nra-ice-stat-grid">
+    <div class="nra-ice-stat">
+      <span class="nra-stat-label">PER</span>
+      <span class="nra-stat-value">{{per}}</span>
+    </div>
+    <div class="nra-ice-stat">
+      <span class="nra-stat-label">SPD</span>
+      <span class="nra-stat-value">{{spd}}</span>
+    </div>
+    <div class="nra-ice-stat">
+      <span class="nra-stat-label">ATK</span>
+      <span class="nra-stat-value">{{atk}}</span>
+    </div>
+    <div class="nra-ice-stat">
+      <span class="nra-stat-label">DEF</span>
+      <span class="nra-stat-value">{{def}}</span>
+    </div>
+  </div>
+
+  <div class="nra-ice-rez">
+    <span class="nra-rez-label">REZ</span>
+    <div class="nra-rez-bar">
+      <div class="nra-rez-fill" style="width: {{rezPercent}}%"></div>
+      <span class="nra-rez-text">{{rez.value}} / {{rez.max}}</span>
+    </div>
+  </div>
+</div>
