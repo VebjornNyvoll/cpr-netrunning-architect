@@ -1271,9 +1271,22 @@ body.nra-targeting #board {
   margin: 0;
 }
 
+.nra-maze-slider {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .nra-maze-range {
   width: 80px;
   accent-color: var(--nra-accent-cyan);
+}
+
+.nra-maze-percent {
+  font-family: var(--nra-font-mono);
+  font-size: 0.8rem;
+  color: var(--nra-accent-cyan);
+  min-width: 32px;
 }
 
 /* ============================================ */

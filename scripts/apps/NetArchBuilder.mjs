@@ -74,6 +74,13 @@ export class NetArchBuilder extends FormApplication {
     el.querySelector(".nra-place-tiles")?.addEventListener("click", () => this._onPlaceTiles());
     el.querySelector(".nra-clear-tiles")?.addEventListener("click", () => this._onClearTiles());
 
+    // Maze chance slider label
+    const mazeRange = el.querySelector('[name="mazeChance"]');
+    const mazePercent = el.querySelector(".nra-maze-percent");
+    mazeRange?.addEventListener("input", () => {
+      if (mazePercent) mazePercent.textContent = `${mazeRange.value}%`;
+    });
+
     el.querySelectorAll(".nra-edit-floor").forEach((btn) => {
       btn.addEventListener("click", (ev) => this._onEditFloor(ev));
     });

@@ -4,7 +4,7 @@ import { getTilePath, getArrowTilePath } from "./tile-mapping.mjs";
 /**
  * Places NET Architecture tiles on the current scene.
  * Supports left-to-right and top-to-bottom orientations,
- * plus an optional maze mode that adds random side-branches.
+ * plus an optional maze mode that creates left/right forks.
  */
 export class TilePlacer {
   /**
@@ -13,9 +13,9 @@ export class TilePlacer {
    * @param {number} originX - Top-left X position in pixels
    * @param {number} originY - Top-left Y position in pixels
    * @param {object} [options] - Placement options
-   * @param {string} [options.orientation="horizontal"] - "horizontal" (left→right) or "vertical" (top→bottom)
-   * @param {boolean} [options.mazeMode=false] - Add random side-branches
-   * @param {number} [options.mazeChance=0.3] - Probability of a side-branch per floor (0-1)
+   * @param {string} [options.orientation] - "horizontal" or "vertical" (reads from settings if omitted)
+   * @param {boolean} [options.mazeMode=false] - Create left/right forks at random floors
+   * @param {number} [options.mazeChance=0.3] - Probability of a fork per floor (0-1)
    */
   static async placeArchitecture(netarchItem, originX, originY, options = {}) {
     const scene = canvas.scene;
@@ -34,11 +34,11 @@ export class TilePlacer {
     const filePath = options.filePath ?? game.settings.get(MODULE_ID, "tilePath");
     const ext = options.tileExtension ?? game.settings.get(MODULE_ID, "tileExtension");
     const gridSize = options.tileGridSize ?? game.settings.get(MODULE_ID, "tileGridSize");
-    const levelWidth = 2;
-    const levelHeight = 2;
-    const connectorWidth = 1;
-    const connectorHeight = 1;
-    const orientation = options.orientation ?? "horizontal";
+    const lw = 2; // level width in grid units
+    const lh = 2; // level height in grid units
+    const cw = 1; // connector width in grid units
+    const ch = 1; // connector height in grid units
+    const orientation = options.orientation ?? game.settings.get(MODULE_ID, "tileOrientation");
     const isVertical = orientation === "vertical";
     const mazeMode = options.mazeMode ?? false;
     const mazeChance = options.mazeChance ?? 0.3;
@@ -46,135 +46,203 @@ export class TilePlacer {
     const tileData = [];
     const branchTracker = {};
 
-    // In maze mode, randomly decide which floors get a side-branch offset
-    // Side-branches shift perpendicular to the main axis
-    const mazeOffsets = {};
+    // Determine which floors get a maze fork (both left AND right)
+    const mazeForks = new Set();
     if (mazeMode) {
       for (const floor of floors) {
         const level = parseInt(floor.floor, 10) || 1;
-        if (level > 1 && Math.random() < mazeChance) {
-          // Random offset: -1 or +1 (shift left/right or up/down)
-          mazeOffsets[level] = Math.random() < 0.5 ? -1 : 1;
+        // Skip first floor and floors that are already branches
+        if (level > 1 && !floor.branch && Math.random() < mazeChance) {
+          mazeForks.add(level);
         }
       }
     }
-
-    // Track the cumulative perpendicular offset for the main path
-    let currentOffset = 0;
 
     for (const floor of floors) {
       const level = parseInt(floor.floor, 10) || 1;
       const branch = floor.branch || null;
+      const isFork = mazeForks.has(level) && !branch;
 
-      // Apply maze offset for this level
-      const mazeShift = mazeOffsets[level] ?? 0;
-      const prevOffset = currentOffset;
-      currentOffset += mazeShift;
-
-      // --- Level tile position ---
       const textureSrc = getTilePath(floor.content, floor.blackice, floor.dv, filePath, ext);
+      const arrowSrc = getArrowTilePath(filePath, ext);
 
-      let levelX, levelY;
+      // --- Main axis position (along the path direction) ---
+      // mainPos = distance along the primary axis for this level
+      const mainPos = (lw + cw) * (level - 1);
 
-      if (isVertical) {
-        // Top→bottom: main axis is Y, branches extend on X
-        const branchOffset = branch ? (branch.charCodeAt(0) - 97 + 1) : 0;
-        levelX = originX + gridSize * (levelHeight + connectorHeight) * (branchOffset + currentOffset);
-        levelY = originY + gridSize * (levelWidth + connectorWidth) * (level - 1);
-      } else {
-        // Left→right: main axis is X, branches extend on Y
-        const branchOffset = branch ? (branch.charCodeAt(0) - 97 + 1) : 0;
-        levelX = originX + gridSize * (levelWidth + connectorWidth) * (level - 1);
-        levelY = originY + gridSize * (levelHeight + connectorHeight) * (branchOffset + currentOffset);
-      }
+      // --- Cross axis position (perpendicular to path) ---
+      // branchOffset shifts for architecture branches (a, b, c...)
+      const branchOffset = branch ? (branch.charCodeAt(0) - 97 + 1) : 0;
 
-      tileData.push({
-        texture: { src: textureSrc },
-        width: gridSize * levelWidth,
-        height: gridSize * levelHeight,
-        x: levelX,
-        y: levelY,
-      });
+      if (isFork) {
+        // MAZE FORK: place the same floor tile in TWO positions (left and right)
+        // and connector arrows from the previous floor to both
 
-      // --- Connector arrow to previous floor ---
-      if (level > 1) {
-        const arrowSrc = getArrowTilePath(filePath, ext);
+        const leftOffset = -1;  // one tile-width to the left/up
+        const rightOffset = 1;  // one tile-width to the right/down
 
-        if (mazeShift !== 0) {
-          // Maze shift: add a perpendicular connector from prev position, then a straight connector
-          this._addMazeConnectors(tileData, arrowSrc, gridSize, originX, originY,
-            level, prevOffset, currentOffset, levelWidth, levelHeight,
-            connectorWidth, connectorHeight, isVertical);
-        } else {
-          // Straight connector
-          let arrowX, arrowY, rotation;
+        for (const forkOffset of [leftOffset, rightOffset]) {
+          const crossPos = (lh + ch) * forkOffset;
 
+          let tileX, tileY;
           if (isVertical) {
-            arrowX = originX + gridSize * ((levelHeight - connectorHeight) / 2 + (levelHeight + connectorHeight) * currentOffset);
-            arrowY = originY + gridSize * ((levelWidth + connectorWidth) * (level - 1) - connectorWidth);
-            rotation = 90;
+            tileX = originX + gridSize * crossPos;
+            tileY = originY + gridSize * mainPos;
           } else {
-            arrowX = originX + gridSize * ((levelWidth + connectorWidth) * (level - 1) - connectorWidth);
-            arrowY = originY + gridSize * ((levelHeight - connectorHeight) / 2 + (levelHeight + connectorHeight) * currentOffset);
-            rotation = 0;
+            tileX = originX + gridSize * mainPos;
+            tileY = originY + gridSize * crossPos;
           }
 
+          // Floor tile
           tileData.push({
-            texture: { src: arrowSrc },
-            width: gridSize * connectorWidth,
-            height: gridSize * connectorHeight,
-            x: arrowX,
-            y: arrowY,
-            rotation,
+            texture: { src: textureSrc },
+            width: gridSize * lw,
+            height: gridSize * lh,
+            x: tileX,
+            y: tileY,
           });
+
+          // Connector arrow from previous floor (on the main axis) to this fork tile
+          // The arrow goes perpendicular from the center of the previous floor's edge
+          if (isVertical) {
+            // Arrow pointing left or right from the main path
+            const arrowX = forkOffset < 0
+              ? originX + gridSize * (crossPos + lh) // left of fork tile, right edge
+              : originX - gridSize * ch;              // right of main path
+            const arrowY = originY + gridSize * (mainPos + (lw - cw) / 2);
+
+            // Perpendicular connector
+            tileData.push({
+              texture: { src: arrowSrc },
+              width: gridSize * cw,
+              height: gridSize * ch,
+              x: forkOffset < 0 ? originX - gridSize * cw : originX + gridSize * lh,
+              y: arrowY,
+              rotation: 0,
+            });
+          } else {
+            // Arrow pointing up or down from the main path
+            const arrowX = originX + gridSize * (mainPos + (lw - cw) / 2);
+
+            tileData.push({
+              texture: { src: arrowSrc },
+              width: gridSize * cw,
+              height: gridSize * ch,
+              x: arrowX,
+              y: forkOffset < 0 ? originY - gridSize * ch : originY + gridSize * lh,
+              rotation: 90,
+            });
+          }
+        }
+
+        // Also place the main straight connector into this level (from prev floor)
+        if (level > 1) {
+          if (isVertical) {
+            tileData.push({
+              texture: { src: arrowSrc },
+              width: gridSize * cw,
+              height: gridSize * ch,
+              x: originX + gridSize * ((lh - ch) / 2),
+              y: originY + gridSize * (mainPos - cw),
+              rotation: 90,
+            });
+          } else {
+            tileData.push({
+              texture: { src: arrowSrc },
+              width: gridSize * cw,
+              height: gridSize * ch,
+              x: originX + gridSize * (mainPos - cw),
+              y: originY + gridSize * ((lh - ch) / 2),
+              rotation: 0,
+            });
+          }
+        }
+      } else {
+        // --- Normal floor (no fork) ---
+        let levelX, levelY;
+
+        if (isVertical) {
+          levelX = originX + gridSize * (lh + ch) * branchOffset;
+          levelY = originY + gridSize * mainPos;
+        } else {
+          levelX = originX + gridSize * mainPos;
+          levelY = originY + gridSize * (lh + ch) * branchOffset;
+        }
+
+        tileData.push({
+          texture: { src: textureSrc },
+          width: gridSize * lw,
+          height: gridSize * lh,
+          x: levelX,
+          y: levelY,
+        });
+
+        // --- Straight connector arrow to previous floor ---
+        if (level > 1) {
+          if (isVertical) {
+            tileData.push({
+              texture: { src: arrowSrc },
+              width: gridSize * cw,
+              height: gridSize * ch,
+              x: originX + gridSize * ((lh - ch) / 2 + (lh + ch) * branchOffset),
+              y: originY + gridSize * (mainPos - cw),
+              rotation: 90,
+            });
+          } else {
+            tileData.push({
+              texture: { src: arrowSrc },
+              width: gridSize * cw,
+              height: gridSize * ch,
+              x: originX + gridSize * (mainPos - cw),
+              y: originY + gridSize * ((lh - ch) / 2 + (lh + ch) * branchOffset),
+              rotation: 0,
+            });
+          }
         }
       }
 
-      // --- Track branches for vertical/horizontal connectors ---
+      // --- Track architecture branches for branch connectors ---
       if (branch && !branchTracker[level]) {
-        branchTracker[level] = { branch, offset: currentOffset };
+        branchTracker[level] = branch;
       }
     }
 
-    // --- Branch connectors ---
-    for (const [levelStr, info] of Object.entries(branchTracker)) {
+    // --- Branch connectors (for architecture branches, not maze forks) ---
+    for (const [levelStr, branch] of Object.entries(branchTracker)) {
       const level = parseInt(levelStr, 10);
-      const branchOffset = info.branch.charCodeAt(0) - 97 + 1;
+      const branchOffset = branch.charCodeAt(0) - 97 + 1;
       const arrowSrc = getArrowTilePath(filePath, ext);
+      const mainPos = (lw + cw) * (level - 1);
 
       if (isVertical) {
-        // Horizontal connector from main to branch
-        const baseX = originX + gridSize * (levelHeight + connectorHeight) * info.offset;
-        const targetX = originX + gridSize * (levelHeight + connectorHeight) * (branchOffset + info.offset);
-        const connY = originY + gridSize * ((levelWidth + connectorWidth) * (level - 1) + (levelWidth - connectorWidth) / 2);
-        let cx = baseX + gridSize * levelHeight;
+        const connY = originY + gridSize * (mainPos + (lw - cw) / 2);
+        let cx = originX + gridSize * lh;
+        const targetX = originX + gridSize * (lh + ch) * branchOffset;
         while (cx < targetX) {
           tileData.push({
             texture: { src: arrowSrc },
-            width: gridSize * connectorWidth,
-            height: gridSize * connectorHeight,
+            width: gridSize * cw,
+            height: gridSize * ch,
             x: cx,
             y: connY,
             rotation: 0,
           });
-          cx += gridSize * connectorWidth;
+          cx += gridSize * cw;
         }
       } else {
-        // Vertical connector from main to branch
-        const connX = originX + gridSize * ((levelWidth + connectorWidth) * (level - 1) + (levelWidth - connectorWidth) / 2);
-        const baseY = originY + gridSize * (levelHeight + connectorHeight) * info.offset;
-        const targetY = originY + gridSize * (levelHeight + connectorHeight) * (branchOffset + info.offset);
-        let cy = baseY + gridSize * levelHeight;
+        const connX = originX + gridSize * (mainPos + (lw - cw) / 2);
+        let cy = originY + gridSize * lh;
+        const targetY = originY + gridSize * (lh + ch) * branchOffset;
         while (cy < targetY) {
           tileData.push({
             texture: { src: arrowSrc },
-            width: gridSize * connectorWidth,
-            height: gridSize * connectorHeight,
+            width: gridSize * cw,
+            height: gridSize * ch,
             x: connX,
             y: cy,
             rotation: 90,
           });
-          cy += gridSize * connectorHeight;
+          cy += gridSize * ch;
         }
       }
     }
@@ -187,78 +255,6 @@ export class TilePlacer {
     await netarchItem.setFlag(MODULE_ID, "placedSceneId", scene.id);
 
     ui.notifications.info(`Placed ${tileIds.length} tiles on the scene.`);
-  }
-
-  /**
-   * Add connectors for a maze shift (perpendicular jog between floors).
-   */
-  static _addMazeConnectors(tileData, arrowSrc, gridSize, originX, originY,
-    level, prevOffset, currentOffset, levelWidth, levelHeight,
-    connectorWidth, connectorHeight, isVertical) {
-
-    // First: straight connector from previous floor to the turn point
-    // Then: perpendicular connector(s) for the shift
-    // Then: straight connector into the current floor
-
-    if (isVertical) {
-      // Main axis Y: shift is on X
-      const turnY = originY + gridSize * ((levelWidth + connectorWidth) * (level - 1) - connectorWidth);
-      const prevX = originX + gridSize * ((levelHeight - connectorHeight) / 2 + (levelHeight + connectorHeight) * prevOffset);
-      const curX = originX + gridSize * ((levelHeight - connectorHeight) / 2 + (levelHeight + connectorHeight) * currentOffset);
-
-      // Straight connector at previous X
-      tileData.push({
-        texture: { src: arrowSrc },
-        width: gridSize * connectorWidth,
-        height: gridSize * connectorHeight,
-        x: prevX,
-        y: turnY,
-        rotation: 90,
-      });
-
-      // Perpendicular shift connector(s)
-      const startX = Math.min(prevX, curX) + gridSize * connectorWidth;
-      const endX = Math.max(prevX, curX);
-      for (let px = startX; px <= endX; px += gridSize * connectorWidth) {
-        tileData.push({
-          texture: { src: arrowSrc },
-          width: gridSize * connectorWidth,
-          height: gridSize * connectorHeight,
-          x: px - gridSize * connectorWidth / 2,
-          y: turnY,
-          rotation: 0,
-        });
-      }
-    } else {
-      // Main axis X: shift is on Y
-      const turnX = originX + gridSize * ((levelWidth + connectorWidth) * (level - 1) - connectorWidth);
-      const prevY = originY + gridSize * ((levelHeight - connectorHeight) / 2 + (levelHeight + connectorHeight) * prevOffset);
-      const curY = originY + gridSize * ((levelHeight - connectorHeight) / 2 + (levelHeight + connectorHeight) * currentOffset);
-
-      // Straight connector at previous Y
-      tileData.push({
-        texture: { src: arrowSrc },
-        width: gridSize * connectorWidth,
-        height: gridSize * connectorHeight,
-        x: turnX,
-        y: prevY,
-        rotation: 0,
-      });
-
-      // Perpendicular shift connector(s)
-      const startY = Math.min(prevY, curY) + gridSize * connectorHeight;
-      const endY = Math.max(prevY, curY);
-      for (let py = startY; py <= endY; py += gridSize * connectorHeight) {
-        tileData.push({
-          texture: { src: arrowSrc },
-          width: gridSize * connectorWidth,
-          height: gridSize * connectorHeight,
-          x: turnX,
-          y: py - gridSize * connectorHeight / 2,
-          rotation: 90,
-        });
-      }
-    }
   }
 
   /**
