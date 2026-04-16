@@ -2,7 +2,7 @@
   "id": "cpr-netrunning-architect",
   "title": "Netrunning Architect",
   "description": "Visual floor-by-floor NET Architecture builder and tracker. Drag-and-drop to place Black ICE, files, and controls on each floor. During play, track the Netrunner's position, program slots, and automate Interface checks.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "authors": [
     {
       "name": "Vebjørn Nyvoll",
@@ -49,6 +49,6 @@
   },
   "url": "https://github.com/VebjornNyvoll/cpr-netrunning-architect",
   "manifest": "https://github.com/VebjornNyvoll/cpr-netrunning-architect/releases/latest/download/module.json",
-  "download": "https://github.com/VebjornNyvoll/cpr-netrunning-architect/releases/download/v0.3.0/module.zip",
+  "download": "https://github.com/VebjornNyvoll/cpr-netrunning-architect/releases/download/v0.3.1/module.zip",
   "bugs": "https://github.com/VebjornNyvoll/cpr-netrunning-architect/issues"
 }
