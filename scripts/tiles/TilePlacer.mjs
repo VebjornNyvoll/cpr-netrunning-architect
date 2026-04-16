@@ -135,42 +135,46 @@ export class TilePlacer {
     const queue = [...floors]; // copy so we can consume
     const treeMaxDepth = maxDepth ?? Infinity;
 
-    function buildBranch(available, branchMaxDepth = Infinity) {
-      const effectiveMax = Math.min(branchMaxDepth, treeMaxDepth);
+    // absoluteDepth tracks the total depth from the root (floor 1)
+    // so maxDepth limits the longest path from start to any leaf
+    function buildBranch(available, absoluteDepth = 0) {
       const nodes = [];
-      let depth = 0;
 
-      while (available.length > 0 && depth < effectiveMax) {
+      while (available.length > 0 && absoluteDepth < treeMaxDepth) {
         const floor = available.shift();
         const node = { floor, left: null, right: null };
         nodes.push(node);
 
-        // Chance to branch (skip first floor, need floors remaining for branches)
-        if (depth > 0 && available.length >= 2 && Math.random() < mazeChance) {
+        const currentDepth = absoluteDepth + 1;
+
+        // Chance to branch (skip first floor in tree, need floors remaining)
+        // Side branches continue from this same depth level
+        if (absoluteDepth > 0 && available.length >= 2 && currentDepth < treeMaxDepth && Math.random() < mazeChance) {
+          const remaining = treeMaxDepth - currentDepth;
           // Decide: branch left, right, or both
           const roll = Math.random();
           if (roll < 0.3 && available.length >= 3) {
             // Both sides branch
-            const leftCount = Math.max(1, Math.floor(Math.random() * 3) + 1);
-            const rightCount = Math.max(1, Math.floor(Math.random() * 3) + 1);
+            const leftCount = Math.max(1, Math.min(Math.floor(Math.random() * 3) + 1, remaining, available.length));
+            const rightCount = Math.max(1, Math.min(Math.floor(Math.random() * 3) + 1, remaining, available.length));
             const leftFloors = available.splice(0, Math.min(leftCount, available.length));
             const rightFloors = available.splice(0, Math.min(rightCount, available.length));
-            node.left = buildBranch(leftFloors, leftFloors.length);
-            node.right = buildBranch(rightFloors, rightFloors.length);
+            node.left = buildBranch(leftFloors, currentDepth);
+            node.right = buildBranch(rightFloors, currentDepth);
           } else if (roll < 0.65) {
             // Left branch only
-            const branchCount = Math.max(1, Math.floor(Math.random() * 3) + 1);
+            const branchCount = Math.max(1, Math.min(Math.floor(Math.random() * 3) + 1, remaining, available.length));
             const branchFloors = available.splice(0, Math.min(branchCount, available.length));
-            node.left = buildBranch(branchFloors, branchFloors.length);
+            node.left = buildBranch(branchFloors, currentDepth);
           } else {
             // Right branch only
-            const branchCount = Math.max(1, Math.floor(Math.random() * 3) + 1);
+            const branchCount = Math.max(1, Math.min(Math.floor(Math.random() * 3) + 1, remaining, available.length));
             const branchFloors = available.splice(0, Math.min(branchCount, available.length));
-            node.right = buildBranch(branchFloors, branchFloors.length);
+            node.right = buildBranch(branchFloors, currentDepth);
           }
         }
 
-        depth++;
+        absoluteDepth = currentDepth;
       }
 
       return nodes;
