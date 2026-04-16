@@ -1,4 +1,4 @@
-import { MODULE_ID, FLOOR_CONTENT_KEYS, createEmptyFloor } from "../constants.mjs";
+import { MODULE_ID, FLOOR_CONTENT_KEYS, BRANCH_CHOICES, createEmptyFloor } from "../constants.mjs";
 import { getFloorTypeInfo, getBlackIceChoices, getContentChoices, getBlackIceDefaults } from "../data/floor-types.mjs";
 import { ArchitectureGenerator } from "../data/architecture-generator.mjs";
 import { parseDragData, validateFloorDrop, isNetarchDrop } from "../utils/drag-drop.mjs";
@@ -36,8 +36,9 @@ export class NetArchBuilder extends FormApplication {
   async getData(options) {
     const floors = this._pendingFloors.map((floor, i) => {
       const typeInfo = getFloorTypeInfo(floor.content);
-      const iceLabel = floor.blackice?.[0]
-        ? (getBlackIceDefaults(floor.blackice[0])?.name ?? game.i18n.localize(floor.blackice[0]))
+      const hasIce = floor.blackice && floor.blackice !== "--";
+      const iceLabel = hasIce
+        ? (getBlackIceDefaults(floor.blackice)?.name ?? game.i18n.localize(floor.blackice))
         : null;
       return {
         ...floor,
@@ -46,6 +47,7 @@ export class NetArchBuilder extends FormApplication {
         contentLabel: typeInfo.label,
         color: typeInfo.color,
         iceLabel,
+        hasBranch: !!floor.branch,
         isFirst: i === 0,
         isLast: i === this._pendingFloors.length - 1,
       };
@@ -126,9 +128,10 @@ export class NetArchBuilder extends FormApplication {
     const contentChoices = getContentChoices();
     const iceChoices = getBlackIceChoices();
     const isBlackIce = floor.content === FLOOR_CONTENT_KEYS.BLACK_ICE;
-    const selectedIce = floor.blackice?.[0] ?? "";
+    const selectedIce = (floor.blackice && floor.blackice !== "--") ? floor.blackice : "";
+    const branchChoices = BRANCH_CHOICES;
 
-    const templateData = { moduleId: MODULE_ID, floor, contentChoices, iceChoices, isBlackIce, selectedIce };
+    const templateData = { moduleId: MODULE_ID, floor, contentChoices, iceChoices, isBlackIce, selectedIce, branchChoices };
     const content = await renderTemplate(
       `modules/${MODULE_ID}/templates/builder/floor-edit-dialog.hbs`,
       templateData
@@ -145,14 +148,14 @@ export class NetArchBuilder extends FormApplication {
             const el = html instanceof jQuery ? html[0] : html;
             floor.dv = el.querySelector('[name="dv"]').value;
             floor.content = el.querySelector('[name="content"]').value;
-            floor.branch = el.querySelector('[name="branch"]').checked;
+            floor.branch = el.querySelector('[name="branch"]').value || "";
             floor.description = el.querySelector('[name="description"]').value;
 
             if (floor.content === FLOOR_CONTENT_KEYS.BLACK_ICE) {
               const iceVal = el.querySelector('[name="blackice"]').value;
-              floor.blackice = iceVal ? [iceVal] : [];
+              floor.blackice = iceVal || "--";
             } else {
-              floor.blackice = [];
+              floor.blackice = "--";
             }
 
             this.render(false);
@@ -257,13 +260,13 @@ export class NetArchBuilder extends FormApplication {
     if (!floor) return;
 
     floor.content = FLOOR_CONTENT_KEYS.BLACK_ICE;
-    floor.blackice = [];
+    floor.blackice = "--";
     floor.description = iceData.name;
 
     // Try to match to a known ICE key
     const knownKey = this._findIceKey(iceData.name);
     if (knownKey) {
-      floor.blackice = [knownKey];
+      floor.blackice = knownKey;
     }
 
     this.render(false);
@@ -290,15 +293,14 @@ export class NetArchBuilder extends FormApplication {
   async _onExportToChat() {
     const floors = this._pendingFloors.map((floor, i) => {
       const typeInfo = getFloorTypeInfo(floor.content);
-      const iceLabel = floor.blackice?.[0]
-        ? (getBlackIceDefaults(floor.blackice[0])?.name ?? "")
-        : "";
+      const hasIce = floor.blackice && floor.blackice !== "--";
+      const iceLabel = hasIce ? (getBlackIceDefaults(floor.blackice)?.name ?? "") : "";
       return {
         num: i + 1,
         dv: floor.dv,
         content: typeInfo.label,
         ice: iceLabel,
-        branch: floor.branch,
+        branch: !!floor.branch,
         description: floor.description,
       };
     });
@@ -348,6 +350,9 @@ export class NetArchBuilder extends FormApplication {
   }
 
   _reindex() {
-    this._pendingFloors.forEach((f, i) => (f.index = i));
+    this._pendingFloors.forEach((f, i) => {
+      f.index = i;
+      f.floor = String(i + 1);
+    });
   }
 }

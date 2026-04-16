@@ -25,7 +25,14 @@
 
   <div class="form-group">
     <label>{{localize (concat moduleId '.builder.branch')}}</label>
-    <input type="checkbox" name="branch" {{#if floor.branch}}checked{{/if}} />
+    <select name="branch">
+      <option value="" {{#unless floor.branch}}selected{{/unless}}>-- None --</option>
+      {{#each branchChoices}}
+        {{#if this}}
+          <option value="{{this}}" {{#if (eq this ../floor.branch)}}selected{{/if}}>{{this}}</option>
+        {{/if}}
+      {{/each}}
+    </select>
   </div>
 
   <div class="form-group">

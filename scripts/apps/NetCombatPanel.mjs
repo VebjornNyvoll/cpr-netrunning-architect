@@ -38,7 +38,8 @@ export class NetCombatPanel extends Application {
     const encounter = this._getIceEncounter();
 
     // Resolve ICE stats
-    const iceKey = encounter?.iceKey ?? floor?.blackice?.[0];
+    const floorIce = (floor?.blackice && floor.blackice !== "--") ? floor.blackice : null;
+    const iceKey = encounter?.iceKey ?? floorIce;
     const iceDefaults = iceKey ? getBlackIceDefaults(iceKey) : null;
     const iceRez = encounter?.iceRez ?? { value: iceDefaults?.rez ?? 15, max: iceDefaults?.rez ?? 15 };
     const iceStats = encounter?.iceStats ?? iceDefaults ?? { per: 2, spd: 4, atk: 2, def: 2 };

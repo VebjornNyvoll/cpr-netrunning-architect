@@ -59,14 +59,18 @@ export function createEmptyState() {
   };
 }
 
-// Default empty floor
+// Valid branch choices per CPR data model
+export const BRANCH_CHOICES = ["", "a", "b", "c", "d", "e", "f", "g", "h"];
+
+// Default empty floor matching CPR netarch data model schema
 export function createEmptyFloor(index = 0) {
   return {
     index,
+    floor: String(index + 1),
     dv: "6",
     content: "",
-    blackice: [],
-    branch: false,
+    blackice: "--",
+    branch: "",
     description: "",
   };
 }

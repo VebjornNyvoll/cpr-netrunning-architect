@@ -89,8 +89,9 @@ export class NetrunnerTracker extends Application {
       const iceEncounter = this._state.iceEncounters?.[i];
       const hasActiveIce = floor.content === "CPR.global.programClass.blackice" && !isCleared && !iceEncounter?.defeated;
 
-      const iceLabel = floor.blackice?.[0]
-        ? (getBlackIceDefaults(floor.blackice[0])?.name ?? game.i18n.localize(floor.blackice[0]))
+      const hasIce = floor.blackice && floor.blackice !== "--";
+      const iceLabel = hasIce
+        ? (getBlackIceDefaults(floor.blackice)?.name ?? game.i18n.localize(floor.blackice))
         : null;
 
       // Runners on this floor
@@ -231,8 +232,9 @@ export class NetrunnerTracker extends Application {
     // Reveal floor notification
     if (isNewFloor) {
       const typeInfo = getFloorTypeInfo(floor.content);
-      const iceLabel = floor.blackice?.[0]
-        ? (getBlackIceDefaults(floor.blackice[0])?.name ?? "")
+      const hasIceOnFloor = floor.blackice && floor.blackice !== "--";
+      const iceLabel = hasIceOnFloor
+        ? (getBlackIceDefaults(floor.blackice)?.name ?? "")
         : null;
       await postFloorRevealCard(
         { num: targetFloor + 1, contentLabel: typeInfo.label, iceLabel },
@@ -267,7 +269,7 @@ export class NetrunnerTracker extends Application {
     const floor = this.netarchItem.system.floors?.[floorIndex];
     if (!floor) return;
 
-    const iceKey = floor.blackice?.[0];
+    const iceKey = (floor.blackice && floor.blackice !== "--") ? floor.blackice : null;
     const iceDefaults = iceKey ? getBlackIceDefaults(iceKey) : null;
 
     if (!this._state.iceEncounters) this._state.iceEncounters = {};

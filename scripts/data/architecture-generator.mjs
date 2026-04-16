@@ -124,10 +124,11 @@ export class ArchitectureGenerator {
   static _parseFloorResult(text, index) {
     const floor = {
       index,
+      floor: String(index + 1),
       dv: "6",
       content: "",
-      blackice: [],
-      branch: false,
+      blackice: "--",
+      branch: "",
       description: text,
     };
 
@@ -148,7 +149,7 @@ export class ArchitectureGenerator {
       floor.content = FLOOR_CONTENT_KEYS.CONTROL_NODE;
     } else if (this._matchesBlackIce(lowerText)) {
       floor.content = FLOOR_CONTENT_KEYS.BLACK_ICE;
-      floor.blackice = [this._identifyBlackIce(lowerText)];
+      floor.blackice = this._identifyBlackIce(lowerText);
     }
 
     return floor;
@@ -188,17 +189,19 @@ export class ArchitectureGenerator {
     for (const [name, key] of Object.entries(mapping)) {
       if (text.includes(name)) return key;
     }
-    return "";
+    return "--";
   }
 
   /**
    * Apply branches to generated floors.
+   * Assigns branch letters "a" through "h".
    */
   static _applyBranches(floors, branchIndices) {
-    for (const idx of branchIndices) {
+    const branchLetters = ["a", "b", "c", "d", "e", "f", "g", "h"];
+    branchIndices.forEach((idx, i) => {
       if (idx < floors.length) {
-        floors[idx].branch = true;
+        floors[idx].branch = branchLetters[i] ?? "a";
       }
-    }
+    });
   }
 }

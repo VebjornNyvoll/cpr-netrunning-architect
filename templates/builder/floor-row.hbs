@@ -1,8 +1,8 @@
-<li class="nra-floor-row nra-floor-drop-zone {{#if branch}}nra-floor-branch{{/if}}"
+<li class="nra-floor-row nra-floor-drop-zone {{#if hasBranch}}nra-floor-branch{{/if}}"
     data-floor-index="{{index}}" style="border-left-color: {{color}};">
   <div class="nra-floor-number">
     <span class="nra-floor-idx">{{floorLabel}}</span>
-    {{#if branch}}<span class="nra-branch-badge" title="Branch">B</span>{{/if}}
+    {{#if hasBranch}}<span class="nra-branch-badge" title="Branch {{branch}}">{{branch}}</span>{{/if}}
   </div>
 
   <div class="nra-floor-dv">
