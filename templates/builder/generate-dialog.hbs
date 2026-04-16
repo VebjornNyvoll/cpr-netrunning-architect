@@ -18,4 +18,21 @@
       </option>
     </select>
   </div>
+
+  <h4>{{localize (concat moduleId '.builder.constraints')}}</h4>
+
+  <div class="form-group">
+    <label>{{localize (concat moduleId '.builder.minControlNodes')}}</label>
+    <input type="number" name="minControlNodes" value="0" min="0" max="10" />
+  </div>
+
+  <div class="form-group">
+    <label>{{localize (concat moduleId '.builder.minFiles')}}</label>
+    <input type="number" name="minFiles" value="0" min="0" max="10" />
+  </div>
+
+  <div class="form-group">
+    <label>{{localize (concat moduleId '.builder.minPasswords')}}</label>
+    <input type="number" name="minPasswords" value="0" min="0" max="10" />
+  </div>
 </form>

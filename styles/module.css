@@ -1237,6 +1237,28 @@
 }
 
 /* ============================================ */
+/*  Tile Placement Targeting                    */
+/* ============================================ */
+
+body.nra-targeting #board {
+  cursor: crosshair !important;
+}
+
+.nra-toolbar-scene {
+  border-top: 2px solid var(--nra-accent-cyan);
+  padding-top: var(--nra-spacing);
+}
+
+.nra-place-tiles {
+  color: var(--nra-accent-green) !important;
+  border-color: var(--nra-accent-green) !important;
+}
+
+.nra-clear-tiles {
+  color: var(--nra-accent-red) !important;
+}
+
+/* ============================================ */
 /*  Scrollbar Styling                           */
 /* ============================================ */
 

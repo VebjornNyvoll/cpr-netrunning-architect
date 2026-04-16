@@ -2,6 +2,7 @@ import { MODULE_ID, FLOOR_CONTENT_KEYS, BRANCH_CHOICES, createEmptyFloor } from 
 import { getFloorTypeInfo, getBlackIceChoices, getContentChoices, getBlackIceDefaults } from "../data/floor-types.mjs";
 import { ArchitectureGenerator } from "../data/architecture-generator.mjs";
 import { parseDragData, validateFloorDrop, isNetarchDrop } from "../utils/drag-drop.mjs";
+import { TilePlacer } from "../tiles/TilePlacer.mjs";
 
 export class NetArchBuilder extends FormApplication {
   constructor(netarchItem, options = {}) {
@@ -70,6 +71,9 @@ export class NetArchBuilder extends FormApplication {
     el.querySelector(".nra-export-chat")?.addEventListener("click", () => this._onExportToChat());
     el.querySelector(".nra-clear-all")?.addEventListener("click", () => this._onClearAll());
     el.querySelector(".nra-save")?.addEventListener("click", () => this._onSave());
+    el.querySelector(".nra-place-tiles")?.addEventListener("click", () => this._onPlaceTiles());
+    el.querySelector(".nra-clear-tiles")?.addEventListener("click", () => this._onClearTiles());
+    el.querySelector(".nra-open-tracker-btn")?.addEventListener("click", () => this._onOpenTracker());
 
     el.querySelectorAll(".nra-edit-floor").forEach((btn) => {
       btn.addEventListener("click", (ev) => this._onEditFloor(ev));
@@ -208,7 +212,12 @@ export class NetArchBuilder extends FormApplication {
 
             const el = html instanceof jQuery ? html[0] : html;
             const difficulty = el.querySelector('[name="difficulty"]').value;
-            const floors = await ArchitectureGenerator.generate(difficulty);
+            const constraints = {
+              minControlNodes: parseInt(el.querySelector('[name="minControlNodes"]')?.value, 10) || 0,
+              minFiles: parseInt(el.querySelector('[name="minFiles"]')?.value, 10) || 0,
+              minPasswords: parseInt(el.querySelector('[name="minPasswords"]')?.value, 10) || 0,
+            };
+            const floors = await ArchitectureGenerator.generate(difficulty, constraints);
             this._pendingFloors = floors;
             this.render(false);
           },
@@ -339,6 +348,42 @@ export class NetArchBuilder extends FormApplication {
     this._pendingFloors = [];
     this.render(false);
     ui.notifications.info(game.i18n.localize(`${MODULE_ID}.builder.cleared`));
+  }
+
+  /* -------------------------------- */
+  /*  Tile Placement                  */
+  /* -------------------------------- */
+
+  async _onPlaceTiles() {
+    // Save first
+    await this._onSave();
+
+    // Minimize the builder so the GM can see the canvas
+    this.minimize();
+
+    try {
+      const pos = await TilePlacer.activateTargeting();
+      await TilePlacer.placeArchitecture(this.netarchItem, pos.x, pos.y);
+    } catch {
+      // Cancelled via ESC
+    }
+
+    this.maximize();
+  }
+
+  async _onClearTiles() {
+    const confirmed = await Dialog.confirm({
+      title: game.i18n.localize(`${MODULE_ID}.tiles.clearTiles`),
+      content: `<p>${game.i18n.localize(`${MODULE_ID}.tiles.confirmClear`)}</p>`,
+    });
+    if (!confirmed) return;
+    await TilePlacer.clearTiles(this.netarchItem);
+  }
+
+  async _onOpenTracker() {
+    await this._onSave();
+    const { NetrunnerTracker } = await import("./NetrunnerTracker.mjs");
+    new NetrunnerTracker(this.netarchItem, null).render(true);
   }
 
   /* -------------------------------- */

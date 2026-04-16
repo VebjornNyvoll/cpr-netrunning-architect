@@ -9,9 +9,13 @@ export class ArchitectureGenerator {
   /**
    * Generate a random architecture.
    * @param {string} difficulty - "basic" | "standard" | "uncommon" | "advanced"
+   * @param {object} [constraints] - Optional minimum content constraints
+   * @param {number} [constraints.minControlNodes=0]
+   * @param {number} [constraints.minFiles=0]
+   * @param {number} [constraints.minPasswords=0]
    * @returns {Promise<Array>} Array of floor objects
    */
-  static async generate(difficulty = "standard") {
+  static async generate(difficulty = "standard", constraints = {}) {
     const packName = getNetArchTablePack();
     const pack = game.packs.get(packName);
     if (!pack) {
@@ -64,7 +68,42 @@ export class ArchitectureGenerator {
       this._applyBranches(floors, branches);
     }
 
+    // Apply constraints — ensure minimum content types are met
+    this._applyConstraints(floors, constraints);
+
     return floors;
+  }
+
+  /**
+   * Ensure generated floors meet minimum content constraints.
+   * Replaces random non-ICE floors to satisfy minimums.
+   */
+  static _applyConstraints(floors, constraints = {}) {
+    const minControlNodes = constraints.minControlNodes ?? 0;
+    const minFiles = constraints.minFiles ?? 0;
+    const minPasswords = constraints.minPasswords ?? 0;
+
+    if (minControlNodes <= 0 && minFiles <= 0 && minPasswords <= 0) return;
+
+    const count = (key) => floors.filter((f) => f.content === key).length;
+    const needs = [
+      { key: FLOOR_CONTENT_KEYS.CONTROL_NODE, need: minControlNodes - count(FLOOR_CONTENT_KEYS.CONTROL_NODE) },
+      { key: FLOOR_CONTENT_KEYS.FILE, need: minFiles - count(FLOOR_CONTENT_KEYS.FILE) },
+      { key: FLOOR_CONTENT_KEYS.PASSWORD, need: minPasswords - count(FLOOR_CONTENT_KEYS.PASSWORD) },
+    ].filter((n) => n.need > 0);
+
+    for (const { key, need } of needs) {
+      let replaced = 0;
+      // Replace empty or duplicate content floors (skip floor 0 = lobby, skip ICE floors)
+      for (let i = floors.length - 1; i >= 2 && replaced < need; i--) {
+        const f = floors[i];
+        if (f.content !== FLOOR_CONTENT_KEYS.BLACK_ICE && f.content !== key) {
+          f.content = key;
+          f.blackice = "--";
+          replaced++;
+        }
+      }
+    }
   }
 
   /**

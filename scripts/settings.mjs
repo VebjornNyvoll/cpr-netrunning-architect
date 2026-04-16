@@ -77,6 +77,42 @@ export function registerSettings() {
     },
   });
 
+  // Tile image path
+  game.settings.register(MODULE_ID, "tilePath", {
+    name: game.i18n.localize(`${MODULE_ID}.settings.tilePath`),
+    hint: game.i18n.localize(`${MODULE_ID}.settings.tilePathHint`),
+    scope: "world",
+    config: true,
+    type: String,
+    default: `systems/cyberpunk-red-core/tiles/netarch/WebP`,
+    filePicker: "folder",
+  });
+
+  // Tile file extension
+  game.settings.register(MODULE_ID, "tileExtension", {
+    name: game.i18n.localize(`${MODULE_ID}.settings.tileExtension`),
+    hint: game.i18n.localize(`${MODULE_ID}.settings.tileExtensionHint`),
+    scope: "world",
+    config: true,
+    type: String,
+    default: "webp",
+    choices: {
+      webp: "WebP (static)",
+      webm: "WebM (animated)",
+      png: "PNG",
+    },
+  });
+
+  // Tile grid size
+  game.settings.register(MODULE_ID, "tileGridSize", {
+    name: game.i18n.localize(`${MODULE_ID}.settings.tileGridSize`),
+    hint: game.i18n.localize(`${MODULE_ID}.settings.tileGridSizeHint`),
+    scope: "world",
+    config: true,
+    type: Number,
+    default: 110,
+  });
+
   // Animation speed (client)
   game.settings.register(MODULE_ID, "animationSpeed", {
     name: game.i18n.localize(`${MODULE_ID}.settings.animationSpeed`),

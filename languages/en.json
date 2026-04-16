@@ -22,7 +22,20 @@
       "animationSpeed": "Animation Speed (ms)",
       "animationSpeedHint": "Speed of floor reveal and movement animations (100-1000ms).",
       "compactMode": "Compact Mode",
-      "compactModeHint": "Use a more compact floor display layout."
+      "compactModeHint": "Use a more compact floor display layout.",
+      "tilePath": "Tile Image Path",
+      "tilePathHint": "Directory containing floor tile images. Default uses the CPR system tiles.",
+      "tileExtension": "Tile File Extension",
+      "tileExtensionHint": "File extension for tile images (webp for static, webm for animated).",
+      "tileGridSize": "Tile Grid Size (px)",
+      "tileGridSizeHint": "Pixel size of each grid unit for tile placement. Default: 110."
+    },
+    "tiles": {
+      "placeOnScene": "Place on Scene",
+      "clearTiles": "Clear Tiles",
+      "openTracker": "Open Tracker",
+      "clickToPlace": "Click on the canvas to place the architecture (top-left corner). Press ESC to cancel.",
+      "confirmClear": "Remove all placed tiles for this architecture from the scene?"
     },
     "builder": {
       "title": "NET Architecture Builder",
@@ -53,7 +66,11 @@
       "generateDifficulty": "Difficulty",
       "generateFloorCount": "Number of floors will be determined by 3d6.",
       "generateConfirm": "Generate",
-      "generateReplace": "This will replace all existing floors. Continue?"
+      "generateReplace": "This will replace all existing floors. Continue?",
+      "constraints": "Constraints (optional)",
+      "minControlNodes": "Min Control Nodes",
+      "minFiles": "Min Files",
+      "minPasswords": "Min Passwords"
     },
     "tracker": {
       "title": "Netrunner Tracker",

@@ -22,6 +22,20 @@
     </button>
   </div>
 
+  {{#if isGM}}
+    <div class="nra-toolbar nra-toolbar-scene">
+      <button type="button" class="nra-place-tiles">
+        <i class="fas fa-map-marker-alt"></i> {{localize (concat moduleId '.tiles.placeOnScene')}}
+      </button>
+      <button type="button" class="nra-clear-tiles">
+        <i class="fas fa-eraser"></i> {{localize (concat moduleId '.tiles.clearTiles')}}
+      </button>
+      <button type="button" class="nra-open-tracker-btn">
+        <i class="fas fa-crosshairs"></i> {{localize (concat moduleId '.tiles.openTracker')}}
+      </button>
+    </div>
+  {{/if}}
+
   <div class="nra-builder-body">
     {{#if floors.length}}
       <div class="nra-floor-list-header">
