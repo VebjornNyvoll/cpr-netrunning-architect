@@ -31,8 +31,8 @@ export class TilePlacer {
     const filePath = options.filePath ?? game.settings.get(MODULE_ID, "tilePath");
     const ext = options.tileExtension ?? game.settings.get(MODULE_ID, "tileExtension");
     const gridSize = options.tileGridSize ?? game.settings.get(MODULE_ID, "tileGridSize");
-    const levelWidth = 3;
-    const levelHeight = 3;
+    const levelWidth = 2;
+    const levelHeight = 2;
     const connectorWidth = 1;
     const connectorHeight = 1;
 
