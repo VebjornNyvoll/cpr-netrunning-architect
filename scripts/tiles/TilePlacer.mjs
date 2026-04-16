@@ -187,9 +187,9 @@ export class TilePlacer {
 
         // Snap to grid
         let snapped;
-        if (typeof canvas.grid.getSnappedPoint === "function") {
-          snapped = canvas.grid.getSnappedPoint({ x, y });
-        } else {
+        try {
+          snapped = canvas.grid.getSnappedPoint({ x, y }, { mode: CONST.GRID_SNAPPING_MODES.TOP_LEFT_VERTEX });
+        } catch {
           snapped = { x: Math.round(x), y: Math.round(y) };
         }
 
