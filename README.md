@@ -1,8 +1,6 @@
 # Netrunning Architect
 
-A Foundry VTT module for **Cyberpunk Red** (`cyberpunk-red-core`) that provides a visual floor-by-floor NET Architecture builder and play-mode netrunner tracker.
-
-Build architectures with drag-and-drop, then run them live at the table — complete with fog of war, automated Interface checks, program management, and Black ICE combat.
+A Foundry VTT module for **Cyberpunk Red** (`cyberpunk-red-core`) that provides a visual NET Architecture builder with tile placement on the current scene. Build architectures with drag-and-drop, generate them randomly with constraints, then place them as tiles directly on your battle map.
 
 ## Requirements
 
@@ -16,7 +14,6 @@ Build architectures with drag-and-drop, then run them live at the table — comp
 
 ## Installation
 
-### Manual Installation
 1. In Foundry VTT, go to **Settings > Add-on Modules > Install Module**
 2. Paste this manifest URL:
    ```
@@ -29,97 +26,105 @@ Build architectures with drag-and-drop, then run them live at the table — comp
 
 ### 1. NET Architecture Builder (GM Tool)
 
-The builder is a visual editor for creating and editing NET Architecture items.
+A visual editor for creating and editing NET Architecture items.
 
 **How to open:**
 - **Right-click** any `netarch` item in the Items sidebar > **Open in NET Architect**
-- Or open a `netarch` item sheet and click the **Open in Architect** button in the header
+- Or open a `netarch` item sheet and click **Open in Architect** in the header
 
-**What you can do:**
-- **Add floors** manually with the + button, setting DV, content type (Password, File, Control Node, Black ICE), and descriptions
-- **Edit floors** — click the pencil icon on any floor to change its DV, content, branch status, and Black ICE type
-- **Reorder floors** with the up/down arrow buttons
-- **Drag-and-drop** Black ICE actors or black-ice-class program items directly onto floor drop zones
-- **Generate random architectures** — click the dice button, pick a difficulty (Basic / Standard / Uncommon / Advanced), and the module rolls on the CPR compendium tables (3d6 for floor count, draws from the system's NET Architecture roll tables)
-- **Export to chat** — posts a formatted architecture summary card to chat (whispered to GM)
-- **Save** — writes your changes back to the `netarch` item
+**Building floors:**
+- **Add floors** manually — set DV, content type (Password, File, Control Node, Black ICE), branch letter, and descriptions
+- **Edit floors** — click the pencil icon to modify any floor
+- **Reorder** with up/down arrows, **delete** with the trash icon
+- **Drag-and-drop** Black ICE actors or black-ice-class programs onto floor drop zones
 
-### 2. Netrunner Tracker (Play Mode)
+**Random generation:**
+- Click the dice button to open the generation dialog
+- Choose difficulty: Basic / Standard / Uncommon / Advanced
+- Set optional **constraints**: minimum number of Control Nodes, Files, or Passwords
+- The module rolls on the CPR compendium tables (3d6 for floor count) and ensures constraints are met
 
-The tracker is the player-facing window used during active netrunning sessions.
+**Other actions:**
+- **Export to Chat** — posts a formatted architecture summary card (whispered to GM)
+- **Save** — writes changes back to the `netarch` item
+
+### 2. Tile Placement on Scene
+
+Place your architecture directly on the current scene as Foundry tiles — no separate netrunning scene needed.
+
+**How to use:**
+1. Build your architecture in the builder (or generate one randomly)
+2. Click **Place on Scene** in the builder toolbar
+3. The builder minimizes and a **crosshair cursor** appears on the canvas
+4. **Click** where you want the top-left corner of the architecture (press **ESC** to cancel)
+5. Tiles are placed using the same grid layout algorithm as the CPR system — floors arranged horizontally with arrow connectors, branches extending vertically
+
+**Clearing tiles:**
+- Click **Clear Tiles** in the builder to remove all tiles placed for that architecture
+- Tile IDs are tracked per architecture, so you can have multiple architectures placed on the same scene
+
+**Custom tiles:**
+The module supports both the default CPR system tiles and custom animated tile sets. Configure in module settings:
+- **Tile Image Path** — point to your custom tile directory (e.g., `assets/Battlemaps/Netrunning`)
+- **Tile File Extension** — `webp` (static), `webm` (animated), or `png`
+- **Tile Grid Size** — pixel size per grid unit (default: 110)
+
+The module auto-detects naming conventions:
+- System default: `Asp.webp`, `PasswordDV6.webp`
+- Custom animated: `ASP-TILE (4).webm`, `PASSWORD-DV6-TILE (5).webm`
+
+### 3. GM Tracker
+
+A GM-side reference window for tracking netrunning state alongside the canvas tiles.
 
 **How to open:**
-- On any character sheet, go to the **Fight** tab and click **Netrunning Architect**
-- Select which NET Architecture to jack into from the dropdown, then click **Jack In**
-
-**What it does:**
-- Displays the architecture as a **vertical tower** of floor tiles
-- **Fog of war** — unexplored floors are hidden (shown as "???") until the netrunner moves to them. The GM always sees all floors.
-- **Movement** — click **Move Up** or **Move Deeper** to navigate. If auto Interface checks are enabled, the module automatically rolls 1d10 + Interface rank vs the floor's DV before moving
-- **Floor reveal** — when entering a new floor, a chat card announces what was found (content type, Black ICE presence)
-- **Black ICE encounters** — when entering a floor with ICE, the combat panel opens automatically
-- **Multi-runner support** — multiple netrunners can be in the same architecture simultaneously, each tracked independently
-- **Jack Out** — ends the session and removes the runner from the architecture
+- Click **Open Tracker** in the builder toolbar
 
 **Tabs:**
-- **Architecture** — the tower view with movement controls
+- **Architecture** — tower view with floor status, movement controls, and multi-runner tracking
 - **NET Actions** — buttons for all 9 Interface abilities (Scanner, Backdoor, Cloak, Control, Eye-Dee, Pathfinder, Slide, Virus, Zap)
 - **Programs** — quick view of rezzed programs with stats and REZ bars
 
-### 3. Program Slot Manager
+### 4. Program Slot Manager
 
-A dedicated panel for managing the netrunner's cyberdeck programs.
+Manage the netrunner's cyberdeck programs.
 
 **How to open:**
 - From the tracker's Programs tab, click **Cyberdeck Programs**
 
-**What it shows:**
-- The equipped cyberdeck's name and slot count (used / total)
-- **Rezzed programs** with ATK, DEF stats and REZ bars
-- **Installed programs** (not yet rezzed)
-- **Empty slots** as placeholders
+**Features:**
+- Visual slot grid showing the equipped cyberdeck's capacity
+- **Rez / De-Rez** programs with one click
+- View program stats (ATK, DEF, REZ) with visual REZ bars
+- Open any program's item sheet for details
 
-**Actions:**
-- Click the play button to **Rez** a program (activates it for NET combat)
-- Click the power button to **De-Rez** a rezzed program
-- Click the search icon to open the program's item sheet
-
-### 4. NET Combat Panel
+### 5. NET Combat Panel
 
 Opens when encountering Black ICE on a floor.
 
-**What it shows:**
-- **ICE stat block** — PER, SPD, ATK, DEF displayed in a grid, plus a visual REZ bar
-- **Runner's rezzed programs** with their stats
-- Quick-action buttons
+**ICE display:**
+- Stat block: PER, SPD, ATK, DEF in a grid
+- Visual REZ bar with current/max values
 
 **Combat actions:**
-- **Zap** — roll Interface rank vs ICE DEF, deal 1d6 REZ damage on hit
-- **Program Attack** — roll Interface rank + program ATK vs ICE DEF, deal 2d6 REZ damage on hit
-- **Program Defend** — roll Interface rank + program DEF (result shown in chat for comparison)
-- **ICE Attacks** — GM clicks to roll ICE ATK (result posted to chat)
-- **Flee (Slide)** — Interface check vs floor DV to escape combat
-- **End Combat** — manually end the encounter
+- **Zap** — Interface rank vs ICE DEF, 1d6 REZ damage on hit
+- **Program Attack** — Interface rank + program ATK vs ICE DEF, 2d6 REZ damage
+- **Program Defend** — roll Interface rank + program DEF
+- **ICE Attacks** — GM rolls ICE ATK
+- **Flee (Slide)** — Interface check vs floor DV to escape
+- **End Combat** — mark encounter as resolved
 
-**GM tools:**
-- **Reduce REZ** — manually subtract 1 REZ from ICE
-- **Reset REZ** — restore ICE to full REZ
+**GM tools:** manually reduce/reset ICE REZ. ICE defeat is announced in chat when REZ hits 0.
 
-When ICE REZ hits 0, a defeat notification is posted to chat and the encounter is marked as cleared.
+### 6. Interface Check Automation
 
-### 5. Interface Check Automation
-
-All Interface rolls follow CPR rules:
+All rolls follow CPR rules:
 - **Formula:** 1d10 + Interface role rank vs DV
-- **Critical Success:** natural 10 on the d10 = roll another d10 and add it
-- **Critical Failure:** natural 1 on the d10 = roll another d10 and subtract it
-- **Dice So Nice:** if installed, 3D dice are shown for all rolls (respects roll mode: public/GM/blind/self)
+- **Critical Success:** natural 10 = roll another d10 and add
+- **Critical Failure:** natural 1 = roll another d10 and subtract
+- **Dice So Nice:** 3D dice shown when DSN is active (respects roll mode)
 
-Results are posted as styled chat cards showing the roll breakdown, total vs DV, and success/failure.
-
-### 6. Socket Synchronization
-
-All state changes (runner movement, floor reveals, ICE encounters, combat actions) are synchronized in real-time between GM and players via Foundry's socket system. The GM is always the authoritative source — players send requests, the GM validates and broadcasts updates.
+Results posted as styled chat cards with roll breakdown and success/failure.
 
 ## Module Settings
 
@@ -131,20 +136,21 @@ All state changes (runner movement, floor reveals, ICE encounters, combat action
 | Auto Interface Checks | On | Prompt Interface rolls when moving between floors |
 | Fog of War | On | Hide unexplored floors in the tracker |
 | Show Floor DVs to Players | Off | Display DVs to players before exploring |
-| Auto-Trigger ICE | On | Automatically open combat when entering an ICE floor |
-| Auto-Roll ICE Initiative | Off | Automatically roll initiative for Black ICE |
-| Default Generation Difficulty | Standard | Default difficulty for random architecture generation |
+| Auto-Trigger ICE | On | Auto-open combat when entering an ICE floor |
+| Auto-Roll ICE Initiative | Off | Auto-roll initiative for Black ICE |
+| Default Generation Difficulty | Standard | Default difficulty for random generation |
+| Tile Image Path | System default | Directory for tile images |
+| Tile File Extension | webp | Tile file format (webp/webm/png) |
+| Tile Grid Size | 110 | Pixels per grid unit for tile placement |
 
 ### Client Settings (per player)
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| Animation Speed | 400ms | Speed of floor reveal and movement animations |
-| Compact Mode | Off | Use a more compact floor display |
+| Animation Speed | 400ms | Speed of UI animations |
+| Compact Mode | Off | Compact floor display |
 
 ## Public API
-
-Other modules can interact with Netrunning Architect via:
 
 ```javascript
 const api = game.modules.get("cpr-netrunning-architect").api;
@@ -157,20 +163,20 @@ api.resetArchitecture(netarchItem);        // Clear all run state
 
 ## Development
 
-1. Clone this repo into your Foundry `Data/modules/` directory:
+1. Clone into your Foundry `Data/modules/` directory:
    ```bash
    cd /path/to/foundry/Data/modules
    git clone https://github.com/VebjornNyvoll/cpr-netrunning-architect.git
    ```
-2. Restart Foundry and enable the module in your world
-3. No build step required — the module uses plain ESModules
+2. Restart Foundry and enable the module
+3. No build step — plain ESModules
 
 ## Release
 
 1. Update `version` in `module.json`
 2. Commit and push
-3. Create a GitHub Release with a tag matching the version (e.g., `v1.0.0`)
-4. The GitHub Actions workflow automatically builds and attaches `module.json` + `module.zip`
+3. Create a GitHub Release with a matching tag (e.g., `v0.3.0`)
+4. GitHub Actions builds and attaches `module.json` + `module.zip`
 
 ## License
 
