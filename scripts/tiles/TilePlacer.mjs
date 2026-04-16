@@ -185,13 +185,8 @@ export class TilePlacer {
         const x = (event.data.global.x - transform.tx) / canvas.stage.scale.x;
         const y = (event.data.global.y - transform.ty) / canvas.stage.scale.y;
 
-        // Snap to grid
-        let snapped;
-        try {
-          snapped = canvas.grid.getSnappedPoint({ x, y }, { mode: CONST.GRID_SNAPPING_MODES.TOP_LEFT_VERTEX });
-        } catch {
-          snapped = { x: Math.round(x), y: Math.round(y) };
-        }
+        // Use raw canvas coordinates — tiles don't need grid snapping
+        const snapped = { x: Math.round(x), y: Math.round(y) };
 
         // Cleanup
         canvas.stage.off("pointerdown", handler);
