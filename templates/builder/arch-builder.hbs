@@ -30,6 +30,12 @@
       <button type="button" class="nra-clear-tiles">
         <i class="fas fa-eraser"></i> {{localize (concat moduleId '.tiles.clearTiles')}}
       </button>
+      <label class="nra-maze-toggle" title="{{localize (concat moduleId '.tiles.mazeModeHint')}}">
+        <input type="checkbox" name="mazeMode" />
+        <i class="fas fa-random"></i> {{localize (concat moduleId '.tiles.mazeMode')}}
+      </label>
+      <input type="range" name="mazeChance" min="10" max="80" value="30" step="10"
+             class="nra-maze-range" title="{{localize (concat moduleId '.tiles.mazeChance')}}" />
     </div>
   {{/if}}
 

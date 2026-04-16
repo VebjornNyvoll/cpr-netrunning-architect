@@ -113,6 +113,20 @@ export function registerSettings() {
     default: 110,
   });
 
+  // Tile orientation
+  game.settings.register(MODULE_ID, "tileOrientation", {
+    name: game.i18n.localize(`${MODULE_ID}.settings.tileOrientation`),
+    hint: game.i18n.localize(`${MODULE_ID}.settings.tileOrientationHint`),
+    scope: "world",
+    config: true,
+    type: String,
+    default: "horizontal",
+    choices: {
+      horizontal: `${MODULE_ID}.tiles.orientHorizontal`,
+      vertical: `${MODULE_ID}.tiles.orientVertical`,
+    },
+  });
+
   // Animation speed (client)
   game.settings.register(MODULE_ID, "animationSpeed", {
     name: game.i18n.localize(`${MODULE_ID}.settings.animationSpeed`),

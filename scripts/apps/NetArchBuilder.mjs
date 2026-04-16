@@ -357,12 +357,22 @@ export class NetArchBuilder extends FormApplication {
     // Save first
     await this._onSave();
 
+    // Read orientation from settings, maze from builder checkbox
+    const orientation = game.settings.get(MODULE_ID, "tileOrientation");
+    const el = this.element instanceof jQuery ? this.element[0] : this.element;
+    const mazeMode = el?.querySelector('[name="mazeMode"]')?.checked ?? false;
+    const mazeChance = parseInt(el?.querySelector('[name="mazeChance"]')?.value, 10) / 100 || 0.3;
+
     // Minimize the builder so the GM can see the canvas
     this.minimize();
 
     try {
       const pos = await TilePlacer.activateTargeting();
-      await TilePlacer.placeArchitecture(this.netarchItem, pos.x, pos.y);
+      await TilePlacer.placeArchitecture(this.netarchItem, pos.x, pos.y, {
+        orientation,
+        mazeMode,
+        mazeChance,
+      });
     } catch {
       // Cancelled via ESC
     }

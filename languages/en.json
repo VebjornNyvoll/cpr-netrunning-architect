@@ -28,14 +28,22 @@
       "tileExtension": "Tile File Extension",
       "tileExtensionHint": "File extension for tile images (webp for static, webm for animated).",
       "tileGridSize": "Tile Grid Size (px)",
-      "tileGridSizeHint": "Pixel size of each grid unit for tile placement. Default: 110."
+      "tileGridSizeHint": "Pixel size of each grid unit for tile placement. Default: 110.",
+      "tileOrientation": "Tile Orientation",
+      "tileOrientationHint": "Layout direction: Left to Right or Top to Bottom."
     },
     "tiles": {
       "placeOnScene": "Place on Scene",
       "clearTiles": "Clear Tiles",
-      "openTracker": "Open Tracker",
       "clickToPlace": "Click on the canvas to place the architecture (top-left corner). Press ESC to cancel.",
-      "confirmClear": "Remove all placed tiles for this architecture from the scene?"
+      "confirmClear": "Remove all placed tiles for this architecture from the scene?",
+      "orientation": "Tile Orientation",
+      "orientHorizontal": "Left to Right",
+      "orientVertical": "Top to Bottom",
+      "mazeMode": "Maze",
+      "mazeModeHint": "Randomly shift some floors sideways to create a maze-like layout.",
+      "mazeChance": "Maze Chance",
+      "placementOptions": "Placement Options"
     },
     "builder": {
       "title": "NET Architecture Builder",
