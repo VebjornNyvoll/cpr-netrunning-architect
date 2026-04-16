@@ -218,10 +218,19 @@ export class NetArchBuilder extends FormApplication {
 
             const el = html instanceof jQuery ? html[0] : html;
             const difficulty = el.querySelector('[name="difficulty"]').value;
+            const parseVal = (name) => {
+              const v = el.querySelector(`[name="${name}"]`)?.value;
+              return v !== "" && v != null ? parseInt(v, 10) : null;
+            };
             const constraints = {
-              minControlNodes: parseInt(el.querySelector('[name="minControlNodes"]')?.value, 10) || 0,
-              minFiles: parseInt(el.querySelector('[name="minFiles"]')?.value, 10) || 0,
-              minPasswords: parseInt(el.querySelector('[name="minPasswords"]')?.value, 10) || 0,
+              minControlNodes: parseVal("minControlNodes") ?? 0,
+              maxControlNodes: parseVal("maxControlNodes"),
+              minFiles: parseVal("minFiles") ?? 0,
+              maxFiles: parseVal("maxFiles"),
+              minPasswords: parseVal("minPasswords") ?? 0,
+              maxPasswords: parseVal("maxPasswords"),
+              minBlackIce: parseVal("minBlackIce") ?? 0,
+              maxBlackIce: parseVal("maxBlackIce"),
             };
             const floors = await ArchitectureGenerator.generate(difficulty, constraints);
             this._pendingFloors = floors;

@@ -252,6 +252,30 @@
   color: var(--nra-accent-red);
 }
 
+/* Constraint rows in generate dialog */
+.nra-constraint-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.nra-constraint-row .nra-constraint-label {
+  min-width: 100px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.nra-constraint-row label {
+  font-size: 0.75rem;
+  color: var(--nra-text-dim);
+}
+
+.nra-constraint-row input[type="number"] {
+  width: 50px;
+  text-align: center;
+}
+
 /* Drop zone highlight */
 .nra-floor-drop-zone.drag-over {
   background: rgba(0, 240, 255, 0.1);

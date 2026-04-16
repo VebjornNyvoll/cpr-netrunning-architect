@@ -75,31 +75,69 @@ export class ArchitectureGenerator {
   }
 
   /**
-   * Ensure generated floors meet minimum content constraints.
-   * Replaces random non-ICE floors to satisfy minimums.
+   * Ensure generated floors meet min/max content constraints.
+   * First enforces maximums (excess floors get reassigned),
+   * then enforces minimums (missing types replace other floors).
    */
   static _applyConstraints(floors, constraints = {}) {
-    const minControlNodes = constraints.minControlNodes ?? 0;
-    const minFiles = constraints.minFiles ?? 0;
-    const minPasswords = constraints.minPasswords ?? 0;
-
-    if (minControlNodes <= 0 && minFiles <= 0 && minPasswords <= 0) return;
-
     const count = (key) => floors.filter((f) => f.content === key).length;
-    const needs = [
-      { key: FLOOR_CONTENT_KEYS.CONTROL_NODE, need: minControlNodes - count(FLOOR_CONTENT_KEYS.CONTROL_NODE) },
-      { key: FLOOR_CONTENT_KEYS.FILE, need: minFiles - count(FLOOR_CONTENT_KEYS.FILE) },
-      { key: FLOOR_CONTENT_KEYS.PASSWORD, need: minPasswords - count(FLOOR_CONTENT_KEYS.PASSWORD) },
-    ].filter((n) => n.need > 0);
 
-    for (const { key, need } of needs) {
+    const types = [
+      { key: FLOOR_CONTENT_KEYS.CONTROL_NODE, min: constraints.minControlNodes ?? 0, max: constraints.maxControlNodes },
+      { key: FLOOR_CONTENT_KEYS.FILE, min: constraints.minFiles ?? 0, max: constraints.maxFiles },
+      { key: FLOOR_CONTENT_KEYS.PASSWORD, min: constraints.minPasswords ?? 0, max: constraints.maxPasswords },
+      { key: FLOOR_CONTENT_KEYS.BLACK_ICE, min: constraints.minBlackIce ?? 0, max: constraints.maxBlackIce },
+    ];
+
+    // --- Enforce maximums first ---
+    // Collect types that need floors (under minimum) so we can reassign excess to them
+    for (const type of types) {
+      if (type.max == null) continue;
+      let current = count(type.key);
+      if (current <= type.max) continue;
+
+      // Find floors of this type to convert (skip lobby floors 0-1)
+      for (let i = floors.length - 1; i >= 2 && current > type.max; i--) {
+        if (floors[i].content === type.key) {
+          // Find a type that needs more floors
+          const needy = types.find((t) => t.key !== type.key && count(t.key) < t.min);
+          if (needy) {
+            floors[i].content = needy.key;
+          } else {
+            // Default to an empty/password floor
+            floors[i].content = FLOOR_CONTENT_KEYS.PASSWORD;
+          }
+          if (type.key === FLOOR_CONTENT_KEYS.BLACK_ICE) {
+            floors[i].blackice = "--";
+          }
+          current--;
+        }
+      }
+    }
+
+    // --- Enforce minimums ---
+    for (const type of types) {
+      if (type.min <= 0) continue;
+      let current = count(type.key);
+      if (current >= type.min) continue;
+
+      const need = type.min - current;
       let replaced = 0;
-      // Replace empty or duplicate content floors (skip floor 0 = lobby, skip ICE floors)
+
       for (let i = floors.length - 1; i >= 2 && replaced < need; i--) {
         const f = floors[i];
-        if (f.content !== FLOOR_CONTENT_KEYS.BLACK_ICE && f.content !== key) {
-          f.content = key;
-          f.blackice = "--";
+        // Don't replace a floor if it would violate that type's minimum
+        const floorType = types.find((t) => t.key === f.content);
+        const floorCount = count(f.content);
+        if (floorType && floorCount <= floorType.min) continue;
+        // Don't replace if it would exceed this type's maximum
+        if (type.max != null && count(type.key) >= type.max) break;
+
+        if (f.content !== type.key) {
+          f.content = type.key;
+          if (type.key !== FLOOR_CONTENT_KEYS.BLACK_ICE) {
+            f.blackice = "--";
+          }
           replaced++;
         }
       }

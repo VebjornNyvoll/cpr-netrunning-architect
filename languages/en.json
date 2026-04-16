@@ -76,9 +76,11 @@
       "generateConfirm": "Generate",
       "generateReplace": "This will replace all existing floors. Continue?",
       "constraints": "Constraints (optional)",
-      "minControlNodes": "Min Control Nodes",
-      "minFiles": "Min Files",
-      "minPasswords": "Min Passwords"
+      "controlNodes": "Control Nodes",
+      "files": "Files",
+      "passwords": "Passwords",
+      "min": "Min",
+      "max": "Max"
     },
     "tracker": {
       "title": "Netrunner Tracker",

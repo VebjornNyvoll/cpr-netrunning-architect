@@ -21,18 +21,35 @@
 
   <h4>{{localize (concat moduleId '.builder.constraints')}}</h4>
 
-  <div class="form-group">
-    <label>{{localize (concat moduleId '.builder.minControlNodes')}}</label>
-    <input type="number" name="minControlNodes" value="0" min="0" max="10" />
+  <div class="nra-constraint-row">
+    <span class="nra-constraint-label">{{localize (concat moduleId '.builder.controlNodes')}}</span>
+    <label>{{localize (concat moduleId '.builder.min')}}</label>
+    <input type="number" name="minControlNodes" value="0" min="0" max="18" />
+    <label>{{localize (concat moduleId '.builder.max')}}</label>
+    <input type="number" name="maxControlNodes" value="" min="0" max="18" placeholder="--" />
   </div>
 
-  <div class="form-group">
-    <label>{{localize (concat moduleId '.builder.minFiles')}}</label>
-    <input type="number" name="minFiles" value="0" min="0" max="10" />
+  <div class="nra-constraint-row">
+    <span class="nra-constraint-label">{{localize (concat moduleId '.builder.files')}}</span>
+    <label>{{localize (concat moduleId '.builder.min')}}</label>
+    <input type="number" name="minFiles" value="0" min="0" max="18" />
+    <label>{{localize (concat moduleId '.builder.max')}}</label>
+    <input type="number" name="maxFiles" value="" min="0" max="18" placeholder="--" />
   </div>
 
-  <div class="form-group">
-    <label>{{localize (concat moduleId '.builder.minPasswords')}}</label>
-    <input type="number" name="minPasswords" value="0" min="0" max="10" />
+  <div class="nra-constraint-row">
+    <span class="nra-constraint-label">{{localize (concat moduleId '.builder.passwords')}}</span>
+    <label>{{localize (concat moduleId '.builder.min')}}</label>
+    <input type="number" name="minPasswords" value="0" min="0" max="18" />
+    <label>{{localize (concat moduleId '.builder.max')}}</label>
+    <input type="number" name="maxPasswords" value="" min="0" max="18" placeholder="--" />
+  </div>
+
+  <div class="nra-constraint-row">
+    <span class="nra-constraint-label">{{localize (concat moduleId '.builder.blackIce')}}</span>
+    <label>{{localize (concat moduleId '.builder.min')}}</label>
+    <input type="number" name="minBlackIce" value="0" min="0" max="18" />
+    <label>{{localize (concat moduleId '.builder.max')}}</label>
+    <input type="number" name="maxBlackIce" value="" min="0" max="18" placeholder="--" />
   </div>
 </form>
