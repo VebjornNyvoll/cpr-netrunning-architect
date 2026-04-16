@@ -73,7 +73,6 @@ export class NetArchBuilder extends FormApplication {
     el.querySelector(".nra-save")?.addEventListener("click", () => this._onSave());
     el.querySelector(".nra-place-tiles")?.addEventListener("click", () => this._onPlaceTiles());
     el.querySelector(".nra-clear-tiles")?.addEventListener("click", () => this._onClearTiles());
-    el.querySelector(".nra-open-tracker-btn")?.addEventListener("click", () => this._onOpenTracker());
 
     el.querySelectorAll(".nra-edit-floor").forEach((btn) => {
       btn.addEventListener("click", (ev) => this._onEditFloor(ev));
@@ -378,12 +377,6 @@ export class NetArchBuilder extends FormApplication {
     });
     if (!confirmed) return;
     await TilePlacer.clearTiles(this.netarchItem);
-  }
-
-  async _onOpenTracker() {
-    await this._onSave();
-    const { NetrunnerTracker } = await import("./NetrunnerTracker.mjs");
-    new NetrunnerTracker(this.netarchItem, null).render(true);
   }
 
   /* -------------------------------- */
