@@ -1306,6 +1306,19 @@ body.nra-targeting #board {
   accent-color: var(--nra-accent-cyan);
 }
 
+.nra-maze-depth {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--nra-text-dim);
+}
+
+.nra-maze-depth input[type="number"] {
+  width: 45px;
+  text-align: center;
+}
+
 .nra-maze-percent {
   font-family: var(--nra-font-mono);
   font-size: 0.8rem;

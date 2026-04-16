@@ -19,6 +19,11 @@
     </select>
   </div>
 
+  <div class="form-group">
+    <label>{{localize (concat moduleId '.builder.maxFloors')}}</label>
+    <input type="number" name="maxFloors" value="" min="3" max="18" placeholder="--" />
+  </div>
+
   <h4>{{localize (concat moduleId '.builder.constraints')}}</h4>
 
   <div class="nra-constraint-row">

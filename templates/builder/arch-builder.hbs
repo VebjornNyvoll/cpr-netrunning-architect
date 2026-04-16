@@ -39,6 +39,10 @@
                class="nra-maze-range" title="{{localize (concat moduleId '.tiles.mazeChance')}}" />
         <span class="nra-maze-percent">30%</span>
       </div>
+      <label class="nra-maze-depth" title="{{localize (concat moduleId '.tiles.maxDepthHint')}}">
+        {{localize (concat moduleId '.tiles.maxDepth')}}
+        <input type="number" name="maxDepth" value="" min="1" max="10" placeholder="--" />
+      </label>
     </div>
   {{/if}}
 

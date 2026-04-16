@@ -40,9 +40,10 @@ export class ArchitectureGenerator {
       }
     }
 
-    // Roll 3d6 for number of floors
+    // Roll 3d6 for number of floors, capped by maxFloors constraint
     const floorCountRoll = await new Roll("3d6").evaluate();
-    const numFloors = Math.max(3, floorCountRoll.total);
+    const maxFloors = constraints.maxFloors ?? Infinity;
+    const numFloors = Math.min(Math.max(3, floorCountRoll.total), maxFloors);
 
     // Roll for branches
     const branches = await this._rollBranches();

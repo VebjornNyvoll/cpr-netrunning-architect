@@ -43,7 +43,9 @@
       "mazeMode": "Maze",
       "mazeModeHint": "Randomly shift some floors sideways to create a maze-like layout.",
       "mazeChance": "Maze Chance",
-      "placementOptions": "Placement Options"
+      "placementOptions": "Placement Options",
+      "maxDepth": "Max Depth",
+      "maxDepthHint": "Maximum depth of the branching tree. Leave blank for no limit."
     },
     "builder": {
       "title": "NET Architecture Builder",
@@ -73,6 +75,7 @@
       "generateTitle": "Generate Random Architecture",
       "generateDifficulty": "Difficulty",
       "generateFloorCount": "Number of floors will be determined by 3d6.",
+      "maxFloors": "Max Floors (3d6 capped)",
       "generateConfirm": "Generate",
       "generateReplace": "This will replace all existing floors. Continue?",
       "constraints": "Constraints (optional)",

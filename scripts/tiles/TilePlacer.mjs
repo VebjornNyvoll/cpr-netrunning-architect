@@ -36,6 +36,7 @@ export class TilePlacer {
     const isVertical = orientation === "vertical";
     const mazeMode = options.mazeMode ?? false;
     const mazeChance = options.mazeChance ?? 0.3;
+    const maxDepth = options.maxDepth ?? null;
 
     const LW = 2; // level tile width in grid units
     const LH = 2; // level tile height in grid units
@@ -47,7 +48,7 @@ export class TilePlacer {
 
     if (mazeMode && floors.length > 2) {
       // Build a tree from the floor list and render it
-      const tree = this._buildMazeTree(floors, mazeChance);
+      const tree = this._buildMazeTree(floors, mazeChance, maxDepth);
       this._renderTree(tree, tileData, originX, originY, 0, gridSize,
         LW, LH, CW, CH, step, isVertical, filePath, ext);
     } else {
@@ -130,14 +131,16 @@ export class TilePlacer {
    *
    * Floors are consumed from the list and distributed across branches.
    */
-  static _buildMazeTree(floors, mazeChance) {
+  static _buildMazeTree(floors, mazeChance, maxDepth = null) {
     const queue = [...floors]; // copy so we can consume
+    const treeMaxDepth = maxDepth ?? Infinity;
 
-    function buildBranch(available, maxDepth = Infinity) {
+    function buildBranch(available, branchMaxDepth = Infinity) {
+      const effectiveMax = Math.min(branchMaxDepth, treeMaxDepth);
       const nodes = [];
       let depth = 0;
 
-      while (available.length > 0 && depth < maxDepth) {
+      while (available.length > 0 && depth < effectiveMax) {
         const floor = available.shift();
         const node = { floor, left: null, right: null };
         nodes.push(node);

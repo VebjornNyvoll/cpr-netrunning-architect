@@ -223,6 +223,7 @@ export class NetArchBuilder extends FormApplication {
               return v !== "" && v != null ? parseInt(v, 10) : null;
             };
             const constraints = {
+              maxFloors: parseVal("maxFloors"),
               minControlNodes: parseVal("minControlNodes") ?? 0,
               maxControlNodes: parseVal("maxControlNodes"),
               minFiles: parseVal("minFiles") ?? 0,
@@ -378,6 +379,8 @@ export class NetArchBuilder extends FormApplication {
     const el = this.element instanceof jQuery ? this.element[0] : this.element;
     const mazeMode = el?.querySelector('[name="mazeMode"]')?.checked ?? false;
     const mazeChance = parseInt(el?.querySelector('[name="mazeChance"]')?.value, 10) / 100 || 0.3;
+    const maxDepthVal = el?.querySelector('[name="maxDepth"]')?.value;
+    const maxDepth = maxDepthVal ? parseInt(maxDepthVal, 10) : null;
 
     // Minimize the builder so the GM can see the canvas
     this.minimize();
@@ -388,6 +391,7 @@ export class NetArchBuilder extends FormApplication {
         orientation,
         mazeMode,
         mazeChance,
+        maxDepth,
       });
     } catch {
       // Cancelled via ESC
