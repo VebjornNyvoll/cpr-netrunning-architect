@@ -77,6 +77,7 @@ export class TilePlacer {
       const floor = floors[i];
       const textureSrc = getTilePath(floor.content, floor.blackice, floor.dv, filePath, ext);
       const arrowSrc = getArrowTilePath(filePath, ext);
+      const hidden = i > 0; // First floor (lobby) is visible, rest hidden
 
       let tileX, tileY;
       if (isVertical) {
@@ -93,9 +94,10 @@ export class TilePlacer {
         height: gridSize * LH,
         x: tileX,
         y: tileY,
+        hidden,
       });
 
-      // Connector to previous tile
+      // Connector to previous tile (always hidden — revealed with its floor)
       if (i > 0) {
         if (isVertical) {
           tileData.push({
@@ -104,6 +106,7 @@ export class TilePlacer {
             x: tileX + gridSize * ((LW - CW) / 2),
             y: tileY - gridSize * CH,
             rotation: 90,
+            hidden: true,
           });
         } else {
           tileData.push({
@@ -112,6 +115,7 @@ export class TilePlacer {
             x: tileX - gridSize * CW,
             y: tileY + gridSize * ((LH - CH) / 2),
             rotation: 0,
+            hidden: true,
           });
         }
       }
@@ -197,13 +201,15 @@ export class TilePlacer {
    * @param {number} col - Column offset (perpendicular to main axis, in grid units)
    */
   static _renderTree(branch, tileData, startX, startY, col, gridSize,
-    LW, LH, CW, CH, step, isVertical, filePath, ext) {
+    LW, LH, CW, CH, step, isVertical, filePath, ext, isRootBranch = true) {
 
     for (let i = 0; i < branch.length; i++) {
       const node = branch[i];
       const depth = i;
       const textureSrc = getTilePath(node.floor.content, node.floor.blackice, node.floor.dv, filePath, ext);
       const arrowSrc = getArrowTilePath(filePath, ext);
+      // Only the very first tile of the root branch is visible
+      const hidden = !(isRootBranch && i === 0);
 
       // Position along main axis
       let tileX, tileY;
@@ -222,9 +228,10 @@ export class TilePlacer {
         height: gridSize * LH,
         x: tileX,
         y: tileY,
+        hidden,
       });
 
-      // Connector to previous tile in this branch
+      // Connector to previous tile in this branch (always hidden)
       if (i > 0) {
         if (isVertical) {
           tileData.push({
@@ -233,6 +240,7 @@ export class TilePlacer {
             x: tileX + gridSize * ((LW - CW) / 2),
             y: tileY - gridSize * CH,
             rotation: 90,
+            hidden: true,
           });
         } else {
           tileData.push({
@@ -241,30 +249,27 @@ export class TilePlacer {
             x: tileX - gridSize * CW,
             y: tileY + gridSize * ((LH - CH) / 2),
             rotation: 0,
+            hidden: true,
           });
         }
       }
 
-      // Render side branches
+      // Render side branches (all hidden, including connectors)
       if (node.left) {
-        // Left branch: perpendicular, negative direction
-        const branchStartDepth = depth; // starts at same depth as parent
         if (isVertical) {
-          // Branch goes left (negative X)
           const branchX = tileX - gridSize * (LW + CW);
           const branchY = tileY;
-          // Connector arrow from this tile to branch
           tileData.push({
             texture: { src: arrowSrc },
             width: gridSize * CW, height: gridSize * CH,
             x: tileX - gridSize * CW,
             y: tileY + gridSize * ((LH - CH) / 2),
             rotation: 0,
+            hidden: true,
           });
           this._renderTree(node.left, tileData, branchX, branchY, 0, gridSize,
-            LW, LH, CW, CH, step, isVertical, filePath, ext);
+            LW, LH, CW, CH, step, isVertical, filePath, ext, false);
         } else {
-          // Branch goes up (negative Y)
           const branchX = tileX;
           const branchY = tileY - gridSize * (LH + CH);
           tileData.push({
@@ -273,16 +278,15 @@ export class TilePlacer {
             x: tileX + gridSize * ((LW - CW) / 2),
             y: tileY - gridSize * CH,
             rotation: 90,
+            hidden: true,
           });
           this._renderTree(node.left, tileData, branchX, branchY, 0, gridSize,
-            LW, LH, CW, CH, step, isVertical, filePath, ext);
+            LW, LH, CW, CH, step, isVertical, filePath, ext, false);
         }
       }
 
       if (node.right) {
-        // Right branch: perpendicular, positive direction
         if (isVertical) {
-          // Branch goes right (positive X)
           const branchX = tileX + gridSize * (LW + CW);
           const branchY = tileY;
           tileData.push({
@@ -291,11 +295,11 @@ export class TilePlacer {
             x: tileX + gridSize * LW,
             y: tileY + gridSize * ((LH - CH) / 2),
             rotation: 0,
+            hidden: true,
           });
           this._renderTree(node.right, tileData, branchX, branchY, 0, gridSize,
-            LW, LH, CW, CH, step, isVertical, filePath, ext);
+            LW, LH, CW, CH, step, isVertical, filePath, ext, false);
         } else {
-          // Branch goes down (positive Y)
           const branchX = tileX;
           const branchY = tileY + gridSize * (LH + CH);
           tileData.push({
@@ -304,9 +308,10 @@ export class TilePlacer {
             x: tileX + gridSize * ((LW - CW) / 2),
             y: tileY + gridSize * LH,
             rotation: 90,
+            hidden: true,
           });
           this._renderTree(node.right, tileData, branchX, branchY, 0, gridSize,
-            LW, LH, CW, CH, step, isVertical, filePath, ext);
+            LW, LH, CW, CH, step, isVertical, filePath, ext, false);
         }
       }
     }
